@@ -150,9 +150,20 @@
                     <div class="presence-card">
                         <h3>🚗 Qui va au terrain aujourd'hui ?</h3>
                         <p style="margin-bottom: 10px;">Signalez votre présence sur la piste !</p>
-                        <button id="presence-btn" class="cta-button" style="width: 100%;">Signaler ma présence</button>
-                        <ul id="members-list" class="members-style" style="margin-top: 15px;">
-                            </ul>
+                        <button id="presence-btn" class="cta-button" style="width: 100%; margin-bottom: 15px;">Signaler ma présence</button>
+                        
+                        <div style="border-top: 2px dashed #ccc; margin-top: 15px; padding-top: 15px;">
+                            <h3 style="margin-bottom: 5px;">🚜 Entretien du terrain</h3>
+                            <p style="margin-bottom: 10px; font-size: 0.9rem; color: #555;">La tonte est en cours actuellement ?</p>
+                            <button id="mowing-btn" class="cta-button" style="width: 100%; background-color: #27ae60; margin-bottom: 10px;">Signaler tonte en cours</button>
+                            <div id="mowing-status-alert" style="display: none; background-color: #fff3cd; color: #856404; border-left: 5px solid #ffc107; padding: 12px; border-radius: 4px; font-weight: bold; text-align: center; font-size: 0.95rem;">
+                                ⚠️ TONTE EN COURS SUR LA PISTE !
+                            </div>
+                        </div>
+
+                        <h3 style="margin-top: 20px; border-top: 2px dashed #ccc; padding-top: 15px; margin-bottom: 10px;">👥 Membres présents</h3>
+                        <ul id="members-list" class="members-style">
+                        </ul>
                     </div>
 
                     <div class="presence-card">
@@ -169,15 +180,15 @@
                             <li><strong>29 Mai 18h30:</strong> Assemblée Générale.</li>
                             <li><strong>16 Mai :</strong> Travaux de tonte de la piste prévus samedi matin</li>
                         </ul>
-                    <h4 style="margin-top: 20px; margin-bottom: 10px; color: var(--dark);">📁 Documents utiles (PDF)</h4>
-    <div style="display: flex; flex-direction: column; gap: 10px;">
-        <a href="documents/infos Club Mai 2026.pdf" target="_blank" class="btn-small" style="background-color: #7f8c8d; text-align: center; display: block; text-decoration: none; color: white;">
-            📄 infos Club - Mai 2026
-        </a>
-        <a href="documents/RÈGLEMENT INTÉRIEUR – Model’s Club Fleming (2026).pdf" target="_blank" class="btn-small" style="background-color: #7f8c8d; text-align: center; display: block; text-decoration: none; color: white;">
-            📄 Règlement Intérieur du Club
-        </a>
-    </div>
+                        <h4 style="margin-top: 20px; margin-bottom: 10px; color: var(--dark);">📁 Documents utiles (PDF)</h4>
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
+                            <a href="documents/infos Club Mai 2026.pdf" target="_blank" class="btn-small" style="background-color: #7f8c8d; text-align: center; display: block; text-decoration: none; color: white;">
+                                📄 infos Club - Mai 2026
+                            </a>
+                            <a href="documents/RÈGLEMENT INTÉRIEUR – Model’s Club Fleming (2026).pdf" target="_blank" class="btn-small" style="background-color: #7f8c8d; text-align: center; display: block; text-decoration: none; color: white;">
+                                📄 Règlement Intérieur du Club
+                            </a>
+                        </div>
                     </div>
 
                 </div>
@@ -216,6 +227,7 @@
 
         let currentUser = null;
         let amIPresent = false;
+        let isMowing = false; // AJOUT : État local pour la tonte
 
         const loginBox = document.getElementById('login-form');
         const loggedBox = document.getElementById('user-logged');
@@ -224,6 +236,10 @@
         const presenceBtn = document.getElementById('presence-btn');
         const listElement = document.getElementById('members-list');
         const userDisplayName = document.getElementById('user-display-name');
+        
+        // AJOUT : Éléments DOM pour la tonte
+        const mowingBtn = document.getElementById('mowing-btn');
+        const mowingAlert = document.getElementById('mowing-status-alert');
 
         onAuthStateChanged(auth, (user) => {
             currentUser = user;
@@ -264,6 +280,25 @@
             }
         });
 
+        // AJOUT : Écouteur en temps réel du statut de la tonte dans Firebase
+        onValue(ref(db, 'status/mowing'), (snapshot) => {
+            const data = snapshot.val();
+            isMowing = data ? data.active : false;
+            
+            if (isMowing) {
+                mowingBtn.innerText = "Tonte terminée 🛑";
+                mowingBtn.style.background = "#e74c3c"; // Rouge pour arrêter
+                mowingAlert.style.display = "block";    // Affiche le bandeau d'alerte
+                if(data.by) {
+                    mowingAlert.innerHTML = `⚠️ TONTE EN COURS SUR LA PISTE !<br><small style="font-weight:normal; font-size:0.8rem;">Signalé par : ${data.by}</small>`;
+                }
+            } else {
+                mowingBtn.innerText = "Signaler tonte en cours 🚜";
+                mowingBtn.style.background = "#27ae60"; // Vert pour démarrer
+                mowingAlert.style.display = "none";     // Cache l'alerte
+            }
+        });
+
         presenceBtn.onclick = async () => {
             if (!currentUser) return;
 
@@ -293,6 +328,27 @@
                 remove(userRef).then(() => {
                     amIPresent = false;
                     updateButtonUI(false);
+                });
+            }
+        };
+
+        // AJOUT : Gestion du clic sur le bouton de tonte
+        mowingBtn.onclick = () => {
+            if (!currentUser) return;
+            const mowingRef = ref(db, 'status/mowing');
+            
+            if (!isMowing) {
+                // Activer le signal de tonte
+                set(mowingRef, {
+                    active: true,
+                    by: currentUser.displayName || currentUser.email,
+                    timestamp: Date.now()
+                });
+            } else {
+                // Désactiver le signal de tonte
+                set(mowingRef, {
+                    active: false,
+                    timestamp: Date.now()
                 });
             }
         };
