@@ -382,7 +382,7 @@ onValue(ref(db, 'mowing_logs'), (snapshot) => {
     
     if (data) {
         // Convertir l'objet Firebase en tableau et trier du plus récent au plus ancien
-        const logs = Object.values(data).sort((a, b) => b.timestamp - a.timestamp);
+        const logs = Object.values(data).filter(log => log.action === 'Début').sort((a, b) => b.timestamp - a.timestamp);
         
         // Afficher les 20 derniers événements
         logs.slice(0, 20).forEach(log => {
@@ -396,8 +396,8 @@ onValue(ref(db, 'mowing_logs'), (snapshot) => {
                 hour: '2-digit', minute: '2-digit'
             });
             
-            const icon = log.action === 'Début' ? '🟢' : '🔴';
-            li.innerHTML = `${icon} <strong>${date}</strong> : ${log.by} a signalé la <strong>${log.action.toLowerCase()}</strong>`;
+            const icon = log.action === 'Début' ? '🚜' : '🔴';
+            li.innerHTML = `${icon} <strong>${date}</strong> : Tonte effectuée par ${log.by} `;
             mowingLogList.appendChild(li);
         });
     } else {
