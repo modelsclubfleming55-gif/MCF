@@ -28,370 +28,291 @@
 
     <main>
         <section id="public-weather" class="container">
-            <div class="weather-card" style="background: linear-gradient(135deg, #34495e, #2c3e50); margin-top: 20px;">
-                <div id="weather-loading">Chargement des conditions de vol...</div>
-                <div id="weather-content" style="display: none;">
-                    <div class="weather-main">
-                        <span id="weather-icon"></span>
-                        <span id="weather-temp">--°C</span>
+            <div class="weather-card" style="background: linear-gradient(135deg, #34495e, #2c3e50); margin-top: 20px; padding: 20px; border-radius: 10px; color: white; display: flex; align-items: center; justify-content: space-between;">
+                <div>
+                    <h3>Météo du Terrain (St-Benoît)</h3>
+                    <p id="weather-desc" style="font-size: 1.2rem; margin: 5px 0;">Chargement...</p>
+                    <p id="weather-wind" style="font-size: 1rem; opacity: 0.9;"></p>
+                </div>
+                <div style="text-align: center;">
+                    <div id="windsock" style="font-size: 3rem; transform-origin: left center;">💨</div>
+                    <span id="weather-status-badge" style="display: inline-block; padding: 5px 10px; border-radius: 20px; font-size: 0.85rem; margin-top: 5px; font-weight: bold;"></span>
+                </div>
+            </div>
+        </section>
+
+        <section id="espace-prive" class="container" style="margin-top: 40px; margin-bottom: 40px;">
+            <div style="background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: center;">
+                <h2>🔐 Espace Privé Membres</h2>
+                <p style="color: #666; margin-bottom: 20px;">Accédez au statut du terrain, à la présence et aux documents internes.</p>
+
+                <div id="private-auth-zone">
+                    <input type="email" id="login-email" class="input-style" placeholder="Votre email club" required>
+                    <input type="password" id="login-password" class="input-style" placeholder="Mot de passe" required>
+                    <button id="btn-login" class="btn-small" style="background-color: var(--primary); padding: 10px 20px; width: 100%; font-weight: bold; margin-top: 10px;">Se connecter</button>
+                    <p id="auth-error" style="color: #e74c3c; margin-top: 10px; font-size: 0.9rem; display: none;"></p>
+                </div>
+
+                <div id="private-presence-content" style="display: none;">
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+                        <span id="welcome-user" style="font-weight: bold;">Bonjour</span>
+                        <button id="btn-logout" class="btn-small">Déconnexion</button>
                     </div>
-                    <div class="weather-details">
-                        <div class="wind-container">
-                            <span id="windsock">🚩</span> <span>Vent : <strong id="weather-wind">-- km/h</strong></span>
+
+                    <div id="mowing-status-alert" style="display: none; background-color: #fff3cd; color: #856404; border-left: 5px solid #ffc107; padding: 12px; border-radius: 4px; font-weight: bold; text-align: center; font-size: 0.95rem; margin-bottom: 15px;">
+                        ⚠️ TONTE EN COURS SUR LA PISTE !
+                    </div>
+
+                    <button id="btn-toggle-mowing" class="btn-small" style="width: 100%; background: #27ae60; padding: 12px; font-weight: bold; margin-bottom: 15px;">🚜 Signaler le début de la tonte</button>
+
+                    <details style="margin-top: 15px; margin-bottom: 25px; text-align: left; background: #fff; padding: 10px; border-radius: 5px; border: 1px solid #ddd;">
+                        <summary style="cursor: pointer; color: var(--primary); font-weight: bold; outline: none;">📖 Afficher le journal des tontes</summary>
+                        <ul id="mowing-log-list" style="list-style-type: none; padding-left: 0; margin-top: 10px; font-size: 0.85rem; max-height: 180px; overflow-y: auto;">
+                            <li>Chargement de l'historique...</li>
+                        </ul>
+                    </details>
+
+                    <div style="border-top: 1px solid #eee; padding-top: 20px; text-align: left;">
+                        <h3>Planifier ma présence aujourd'hui</h3>
+                        <div style="margin-top: 10px; display: flex; gap: 10px;">
+                            <button id="btn-presence-am" class="btn-small" style="flex: 1; background: #95a5a6;">Matin (AM)</button>
+                            <button id="btn-presence-pm" class="btn-small" style="flex: 1; background: #95a5a6;">Après-midi (PM)</button>
                         </div>
-                        <span id="flight-status" class="status-badge">Analyse...</span>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="presentation" class="container">
-            <h2 class="section-title">Pourquoi adhérer au club ?</h2>
-            <div class="info-grid">
-                <div class="pricing-card">
-                    <img src="images/entraide.jpg" alt="Entraide au club" class="section-img">
-                    <h3>🤝 Entraide & Partage</h3>
-                    <p>Le modélisme est avant tout une aventure humaine. Au club, vous trouverez toujours un membre expérimenté pour vous conseiller sur le choix de votre matériel, vous aider à régler un moteur, peaufiner l'électronique de votre modèle ou partager des astuces de construction.</p>
-                </div>
-                <div class="pricing-card">
-                    <img src="images/ecolage.png" alt="Apprendre le pilotage" class="section-img">
-                    <h3>🎓 Apprendre à piloter en écolage</h3>
-                    <p>Débutez en toute sécurité ! Grâce à notre système de double commande (écolage), un moniteur qualifié vous accompagne pas à pas lors de vos premiers vols. Vous apprenez les réflexes de pilotage sans risquer d'endommager votre matériel.</p>
-                </div>
-            </div>
-        </section>
-
-        <section id="sites" class="container">
-            <h2 class="section-title">Nos Sites et Infrastructures</h2>
-            <div class="sites-grid">
-                <div class="site-box">
-                    <img src="images/terrainvol.jpg" alt="Terrain" class="section-img">
-                    <h3>🛩️ Le Terrain de Vol</h3>
-                    <p>Terrain de Thierville-sur-Meuse. Notre piste extérieure dégagée et parfaitement entretenue est idéale pour faire décoller vos avions, planeurs et hélicoptères de toutes tailles en toute liberté.</p>
-                </div>
-                <div class="site-box">
-                    <img src="images/sallegri.jpg" alt="salle" class="section-img">
-                    <h3>🛠️ La Salle de Construction</h3>
-                    <p>Quartier Gribeauval, Thierville-sur-Meuse. Un espace équipé d'outillage dédié à l'assemblage et à la réparation de vos modèles. Ouvert toute l'année.</p>
-                </div>
-                <div class="site-box">
-                    <img src="images/sallevannier.jpg" alt="salle Vannier" class="section-img">
-                    <h3>🏠 La Salle Indoor</h3>
-                    <p>Salle Vannier, Verdun. Pour ne jamais s'arrêter de voler ! Un accès régulier à un gymnase permettant le pilotage de modèles ultra-légers à l'abri de la météo.</p>
-                </div>
-            </div>
-        </section>
-
-        <section id="evenements" class="container">
-            <h2 class="section-title">Événements & Vie du Club</h2>
-            <div class="info-grid">
-                <div class="events-card">
-                    <img src="images/airdoudou.jpg" alt="air doudou" class="section-img">
-                    <h3>📅 Événements Publics</h3>
-                    <ul class="calendar">
-                        <li><span>28 Juin</span> Portes ouvertes (Quartier Gribeauval)</li>
-                        <li><span>2 Août</span> Air Doudou (Terrain Thierville)</li>
-                    </ul>
-                </div>
-                <div class="events-card">
-                    <img src="images/interclub.jpg" alt="interclub" class="section-img">
-                    <h3>🏆 Rencontres Interclubs</h3>
-                    <p>Nous organisons régulièrement des journées d'échange avec les clubs de la région. Un moment de convivialité idéal pour partager notre passion commune autour d'un barbecue.</p>
-                </div>
-            </div>
-        </section>
-
-        <section id="tarifs" class="container">
-            <h2 class="section-title">Inscriptions et Tarifs</h2>
-            <div class="info-grid">
-                <div class="pricing-card" style="grid-column: 1 / -1; max-width: 600px; margin: 0 auto; width: 100%;">
-                    <h3>Tarifs des Licences 2026</h3>
-                    <ul class="calendar">
-                        <li><strong>Adulte :</strong> 85 €</li>
-                        <li><strong>Junior (né entre 2008 et 2011) :</strong> 55 €</li>
-                        <li><strong>Cadet (né en 2012 ou après) :</strong> 45 €</li>
-                        <li><strong>Non Pratiquant :</strong> 50 €</li>
-                    </ul>
-                    <div class="contact-box" style="text-align: center;">
-                        <p>Le club est affilié à la Fédération Française d'AéroModélisme.</p>
-                        <a href="https://www.ffam.asso.fr/" target="_blank" class="btn-email" style="background-color: var(--primary); display: inline-block; margin-top: 10px;">🌐 Visiter le site de la FFAM</a>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="contact" class="container">
-            <h2 class="section-title">Contact</h2>
-            <div class="pricing-card" style="max-width: 600px; margin: 0 auto;">
-                <p><strong>Benoit Chaumet</strong> (Président)</p>
-                <p>📞 06 07 81 22 95</p>
-                <a href="mailto:models.club.fleming55@gmail.com" class="btn-email" style="display: inline-block; margin-top: 10px;">📧 Nous contacter par mail</a>
-            </div>
-        </section>
-
-        <section id="espace-prive" style="background-color: #eaeded; padding: 40px 0; margin-top: 50px; border-top: 3px solid var(--dark);">
-            <div class="container">
-                <h2 class="section-title" style="margin-top: 0;">🔐 Espace Privé Membres</h2>
-                
-                <div class="auth-box" id="login-form" style="max-width: 400px; margin: 0 auto 30px; text-align: center;">
-                    <h3>Connexion requise</h3>
-                    <input type="email" id="login-email" placeholder="Email de membre" class="input-style">
-                    <input type="password" id="login-password" placeholder="Mot de passe" class="input-style">
-                    <button id="btn-login" class="cta-button" style="width: 100%; margin-top: 10px;">Se connecter</button>
-                </div>
-
-                <div id="user-logged" style="display: none; text-align: center; margin-bottom: 20px;">
-                    <p>Bienvenue, <span id="user-display-name" style="font-weight: bold; color: var(--primary);"></span> !</p>
-                    <button id="btn-logout" class="btn-small" style="background-color: #e74c3c;">Déconnexion</button>
-                </div>
-
-                <div id="private-presence-content" style="display: none;" class="info-grid">
-                    
-                    <div class="presence-card">
-                        <h3>🚗 Qui va au terrain aujourd'hui ?</h3>
-                        <p style="margin-bottom: 10px;">Signalez votre présence sur la piste !</p>
-                        <button id="presence-btn" class="cta-button" style="width: 100%; margin-bottom: 15px;">Signaler ma présence</button>
                         
-                        <div style="border-top: 2px dashed #ccc; margin-top: 15px; padding-top: 15px;">
-                            <h3 style="margin-bottom: 5px;">🚜 Entretien du terrain</h3>
-                            <p style="margin-bottom: 10px; font-size: 0.9rem; color: #555;">La tonte est en cours actuellement ?</p>
-                            <button id="mowing-btn" class="cta-button" style="width: 100%; background-color: #27ae60; margin-bottom: 10px;">Signaler tonte en cours</button>
-                            <div id="mowing-status-alert" style="display: none; background-color: #fff3cd; color: #856404; border-left: 5px solid #ffc107; padding: 12px; border-radius: 4px; font-weight: bold; text-align: center; font-size: 0.95rem;">
-                                ⚠️ TONTE EN COURS SUR LA PISTE !
-                            </div>
-                        </div>
-
-                        <h3 style="margin-top: 20px; border-top: 2px dashed #ccc; padding-top: 15px; margin-bottom: 10px;">👥 Membres présents</h3>
+                        <h4 style="margin-top: 20px;">Pilotes prévus aujourd'hui :</h4>
                         <ul id="members-list" class="members-style">
+                            <li>Aucun pilote inscrit pour le moment.</li>
                         </ul>
                     </div>
 
-                    <div class="presence-card">
-                        <h3>Événements Privés & Interclubs 2026</h3>
-                        <ul class="calendar">
-                            <li><span>2 Mars</span> InterClub indoor / Portes ouvertes</li>
-                            <li><span>21-22 Août</span> InterClub Privé Outdoor</li>
+                    <div style="border-top: 1px solid #eee; padding-top: 20px; margin-top: 20px; text-align: left;">
+                        <h3>📁 Documents Internes</h3>
+                        <ul style="list-style: none; margin-top: 10px; padding: 0;">
+                            <li style="margin: 8px 0;"><a href="./documents/infos Club Mai 2026.pdf" target="_blank" style="color: var(--primary); text-decoration: none;">📄 Infos Club Mai 2026.pdf</a></li>
+                            <li style="margin: 8px 0;"><a href="./documents/RÈGLEMENT INTÉRIEUR – Model’s Club Fleming (2026).pdf" target="_blank" style="color: var(--primary); text-decoration: none;">📄 Règlement Intérieur 2026.pdf</a></li>
                         </ul>
                     </div>
-
-                    <div class="presence-card">
-                        <h3>📢 Bulletin d'information & Documents</h3>
-                        <ul class="calendar">
-                            <li><strong>29 Mai 18h30:</strong> Assemblée Générale.</li>
-                            <li><strong>16 Mai :</strong> Travaux de tonte de la piste prévus samedi matin</li>
-                        </ul>
-                        <h4 style="margin-top: 20px; margin-bottom: 10px; color: var(--dark);">📁 Documents utiles (PDF)</h4>
-                        <div style="display: flex; flex-direction: column; gap: 10px;">
-                            <a href="documents/infos Club Mai 2026.pdf" target="_blank" class="btn-small" style="background-color: #7f8c8d; text-align: center; display: block; text-decoration: none; color: white;">
-                                📄 infos Club - Mai 2026
-                            </a>
-                            <a href="documents/RÈGLEMENT INTÉRIEUR – Model’s Club Fleming (2026).pdf" target="_blank" class="btn-small" style="background-color: #7f8c8d; text-align: center; display: block; text-decoration: none; color: white;">
-                                📄 Règlement Intérieur du Club
-                            </a>
-                        </div>
-                    </div>
-
-                </div>
-
-                <div id="public-presence-message" style="text-align: center; color: #7f8c8d;">
-                    <p>ℹ️ Connectez-vous avec vos identifiants pour accéder au bulletin d'information, aux calendriers interclubs et aux présences sur le terrain.</p>
                 </div>
 
             </div>
         </section>
     </main>
 
-    <footer style="background-color: var(--dark); color: white; padding: 20px 0; text-align: center;">
-        <p>&copy; 2026 Model's Club Fleming. Tous droits réservés.</p>
-    </footer>
-
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
-        import { getDatabase, ref, set, onValue, remove, get } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-database.js";
-        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
+        import { getDatabase, ref, set, onValue, remove, get, push } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-database.js";
 
+        // Vos identifiants de configuration Firebase
         const firebaseConfig = {
-            apiKey: "AIzaSyCKX6fHMUwm-PB2Xa0fgXB1bOTLYaWCUj0",
-            authDomain: "modelsclubfleming.firebaseapp.com",
-            databaseURL: "https://modelsclubfleming-default-rtdb.europe-west1.firebasedatabase.app", 
-            projectId: "modelsclubfleming",
-            storageBucket: "modelsclubfleming.firebasestorage.app",
-            messagingSenderId: "172176953870",
-            appId: "1:172176953870:web:6e74763041e61fa2f1a25f",
-            measurementId: "G-6VKLW4BTE5"
+            apiKey: "VOTRE_API_KEY",
+            authDomain: "VOTRE_AUTH_DOMAIN",
+            databaseURL: "VOTRE_DATABASE_URL",
+            projectId: "VOTRE_PROJECT_ID",
+            storageBucket: "VOTRE_STORAGE_BUCKET",
+            messagingSenderId: "VOTRE_MESSAGING_SENDER_ID",
+            appId: "VOTRE_APP_ID"
         };
 
         const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
         const auth = getAuth(app);
+        const db = getDatabase(app);
 
         let currentUser = null;
-        let amIPresent = false;
-        let isMowing = false; // AJOUT : État local pour la tonte
+        let isMowing = false;
+        let userPresence = { am: false, pm: false };
 
-        const loginBox = document.getElementById('login-form');
-        const loggedBox = document.getElementById('user-logged');
-        const privateContent = document.getElementById('private-presence-content');
-        const publicMessage = document.getElementById('public-presence-message');
-        const presenceBtn = document.getElementById('presence-btn');
-        const listElement = document.getElementById('members-list');
-        const userDisplayName = document.getElementById('user-display-name');
-        
-        // AJOUT : Éléments DOM pour la tonte
-        const mowingBtn = document.getElementById('mowing-btn');
+        const authZone = document.getElementById('private-auth-zone');
+        const presenceContent = document.getElementById('private-presence-content');
+        const welcomeUser = document.getElementById('welcome-user');
+        const authError = document.getElementById('auth-error');
+        const mowingBtn = document.getElementById('btn-toggle-mowing');
         const mowingAlert = document.getElementById('mowing-status-alert');
+        const membersList = document.getElementById('members-list');
+        const mowingLogList = document.getElementById('mowing-log-list');
 
+        const btnAm = document.getElementById('btn-presence-am');
+        const btnPm = document.getElementById('btn-presence-pm');
+
+        // Gestion de l'état d'authentification
         onAuthStateChanged(auth, (user) => {
-            currentUser = user;
             if (user) {
-                loginBox.style.display = 'none';
-                loggedBox.style.display = 'block';
-                privateContent.style.display = 'grid'; 
-                publicMessage.style.display = 'none';
-                userDisplayName.innerText = user.displayName || user.email;
-
-                const userRef = ref(db, 'presence/' + user.uid);
-                get(userRef).then((snapshot) => {
-                    amIPresent = snapshot.exists();
-                    updateButtonUI(amIPresent);
-                });
+                currentUser = user;
+                welcomeUser.innerText = `👋 Bonjour ${user.displayName || user.email}`;
+                authZone.style.display = 'none';
+                presenceContent.style.display = 'block';
+                setupRealtimeListeners(user);
             } else {
-                loginBox.style.display = 'block';
-                loggedBox.style.display = 'none';
-                privateContent.style.display = 'none';
-                publicMessage.style.display = 'block';
-                amIPresent = false;
+                currentUser = null;
+                authZone.style.display = 'block';
+                presenceContent.style.display = 'none';
             }
         });
 
-        onValue(ref(db, 'presence/'), (snapshot) => {
-            listElement.innerHTML = "";
-            const data = snapshot.val();
-            if (data) {
-                Object.values(data).forEach((member) => {
-                    const li = document.createElement('li');
-                    li.style.padding = "8px 0";
-                    li.style.borderBottom = "1px solid #eee";
-                    li.innerHTML = `• <strong>${member.name}</strong> est sur la piste 🛩️`;
-                    listElement.appendChild(li);
+        // Connexion
+        document.getElementById('btn-login').onclick = () => {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            authError.style.display = 'none';
+
+            signInWithEmailAndPassword(auth, email, password)
+                .catch(error => {
+                    authError.innerText = "Identifiants incorrects ou problème réseau.";
+                    authError.style.display = 'block';
                 });
-            } else {
-                listElement.innerHTML = "<li>Personne au terrain actuellement.</li>";
-            }
-        });
-
-        // AJOUT : Écouteur en temps réel du statut de la tonte dans Firebase
-        onValue(ref(db, 'status/mowing'), (snapshot) => {
-            const data = snapshot.val();
-            isMowing = data ? data.active : false;
-            
-            if (isMowing) {
-                mowingBtn.innerText = "Tonte terminée 🛑";
-                mowingBtn.style.background = "#e74c3c"; // Rouge pour arrêter
-                mowingAlert.style.display = "block";    // Affiche le bandeau d'alerte
-                if(data.by) {
-                    mowingAlert.innerHTML = `⚠️ TONTE EN COURS SUR LA PISTE !<br><small style="font-weight:normal; font-size:0.8rem;">Signalé par : ${data.by}</small>`;
-                }
-            } else {
-                mowingBtn.innerText = "Signaler tonte en cours 🚜";
-                mowingBtn.style.background = "#27ae60"; // Vert pour démarrer
-                mowingAlert.style.display = "none";     // Cache l'alerte
-            }
-        });
-
-        presenceBtn.onclick = async () => {
-            if (!currentUser) return;
-
-            if (!currentUser.displayName) {
-                const actingName = prompt("Veuillez saisir votre Prénom :");
-                if (!actingName) return;
-
-                try {
-                    await updateProfile(currentUser, { displayName: actingName });
-                    userDisplayName.innerText = actingName;
-                } catch (err) {
-                    console.error("Erreur profil:", err);
-                }
-            }
-
-            const userRef = ref(db, 'presence/' + currentUser.uid);
-
-            if (!amIPresent) {
-                set(userRef, {
-                    name: currentUser.displayName,
-                    timestamp: Date.now()
-                }).then(() => {
-                    amIPresent = true;
-                    updateButtonUI(true);
-                });
-            } else {
-                remove(userRef).then(() => {
-                    amIPresent = false;
-                    updateButtonUI(false);
-                });
-            }
         };
 
-        // AJOUT : Gestion du clic sur le bouton de tonte
+        // Déconnexion
+        document.getElementById('btn-logout').onclick = () => {
+            signOut(auth);
+        };
+
+        // Écouteurs en temps réel Firebase (Appelés une fois connecté)
+        function setupRealtimeListeners(user) {
+            const todayStr = new Date().toISOString().split('T')[0];
+            const userName = user.displayName || user.email.split('@')[0];
+
+            // 1. Écouter le statut global de tonte
+            onValue(ref(db, 'status/mowing'), (snapshot) => {
+                const data = snapshot.val();
+                if (data && data.active) {
+                    isMowing = true;
+                    mowingAlert.style.display = 'block';
+                    mowingAlert.innerText = `⚠️ TONTE EN COURS SUR LA PISTE (Par : ${data.by})`;
+                    mowingBtn.innerText = "🚜 Signaler la FIN de la tonte";
+                    mowingBtn.style.background = "#e74c3c";
+                } else {
+                    isMowing = false;
+                    mowingAlert.style.display = 'none';
+                    mowingBtn.innerText = "🚜 Signaler le DÉBUT de la tonte";
+                    mowingBtn.style.background = "#27ae60";
+                }
+            });
+
+            // 2. Écouter le Journal de tonte (Historique complet)
+            onValue(ref(db, 'mowing_logs'), (snapshot) => {
+                mowingLogList.innerHTML = "";
+                const data = snapshot.val();
+                if (data) {
+                    const logs = Object.values(data).sort((a, b) => b.timestamp - a.timestamp);
+                    logs.slice(0, 20).forEach(log => {
+                        const li = document.createElement('li');
+                        li.style.padding = "6px 0";
+                        li.style.borderBottom = "1px solid #eee";
+                        const date = new Date(log.timestamp).toLocaleString('fr-FR', {
+                            day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'
+                        });
+                        const icon = log.action === 'Début' ? '🟢' : '🔴';
+                        li.innerHTML = `${icon} <strong>${date}</strong> : ${log.by} (<strong>${log.action.toLowerCase()}</strong>)`;
+                        mowingLogList.appendChild(li);
+                    });
+                } else {
+                    mowingLogList.innerHTML = "<li>Aucun historique de tonte pour le moment.</li>";
+                }
+            });
+
+            // 3. Écouter ma propre présence du jour pour mettre à jour les boutons
+            onValue(ref(db, `presence/${todayStr}/${user.uid}`), (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    userPresence = { am: data.am || false, pm: data.pm || false };
+                } else {
+                    userPresence = { am: false, pm: false };
+                }
+                btnAm.style.background = userPresence.am ? "#2ecc71" : "#95a5a6";
+                btnPm.style.background = userPresence.pm ? "#2ecc71" : "#95a5a6";
+            });
+
+            // 4. Écouter la liste globale de présence d'aujourd'hui
+            onValue(ref(db, `presence/${todayStr}`), (snapshot) => {
+                membersList.innerHTML = "";
+                const data = snapshot.val();
+                if (data) {
+                    let count = 0;
+                    for (const id in data) {
+                        const p = data[id];
+                        if (p.am || p.pm) {
+                            count++;
+                            const li = document.createElement('li');
+                            let slots = [];
+                            if (p.am) slots.push("Matin");
+                            if (p.pm) slots.push("Après-midi");
+                            li.innerHTML = `👤 <strong>${p.name}</strong> sera présent : ${slots.join(' et ')}`;
+                            membersList.appendChild(li);
+                        }
+                    }
+                    if(count === 0) {
+                        membersList.innerHTML = "<li>Aucun pilote inscrit pour le moment.</li>";
+                    }
+                } else {
+                    membersList.innerHTML = "<li>Aucun pilote inscrit pour le moment.</li>";
+                }
+            });
+        }
+
+        // Action sur le bouton Tonte avec écriture dans l'historique
         mowingBtn.onclick = () => {
             if (!currentUser) return;
             const mowingRef = ref(db, 'status/mowing');
-            
+            const logRef = ref(db, 'mowing_logs');
+            const userName = currentUser.displayName || currentUser.email.split('@')[0];
+
             if (!isMowing) {
-                // Activer le signal de tonte
-                set(mowingRef, {
-                    active: true,
-                    by: currentUser.displayName || currentUser.email,
-                    timestamp: Date.now()
-                });
+                set(mowingRef, { active: true, by: userName, timestamp: Date.now() });
+                push(logRef, { action: 'Début', by: userName, timestamp: Date.now() });
             } else {
-                // Désactiver le signal de tonte
-                set(mowingRef, {
-                    active: false,
-                    timestamp: Date.now()
-                });
+                set(mowingRef, { active: false, timestamp: Date.now() });
+                push(logRef, { action: 'Fin', by: userName, timestamp: Date.now() });
             }
         };
 
-        document.getElementById('btn-login').onclick = () => {
-            const email = document.getElementById('login-email').value;
-            const pass = document.getElementById('login-password').value;
-            signInWithEmailAndPassword(auth, email, pass)
-                .catch(error => alert("Erreur d'authentification : " + error.message));
-        };
+        // Actions Présence AM / PM
+        function togglePresence(slot) {
+            if (!currentUser) return;
+            const todayStr = new Date().toISOString().split('T')[0];
+            const myPresenceRef = ref(db, `presence/${todayStr}/${currentUser.uid}`);
+            const userName = currentUser.displayName || currentUser.email.split('@')[0];
 
-        document.getElementById('btn-logout').onclick = () => signOut(auth);
+            userPresence[slot] = !userPresence[slot];
 
-        function updateButtonUI(present) {
-            if (present) {
-                presenceBtn.innerText = "Je quitte le terrain";
-                presenceBtn.style.background = "#e74c3c";
+            if (!userPresence.am && !userPresence.pm) {
+                remove(myPresenceRef);
             } else {
-                presenceBtn.innerText = "Signaler ma présence";
-                presenceBtn.style.background = "#3498db";
+                set(myPresenceRef, {
+                    name: userName,
+                    am: userPresence.am,
+                    pm: userPresence.pm
+                });
             }
         }
 
+        btnAm.onclick = () => togglePresence('am');
+        btnPm.onclick = () => togglePresence('pm');
+
+        // Récupération de la Météo Open-Meteo
         async function getWeather() {
-            const apiKey = "24f6a9d02f6b203305d4609786f8b512";
-            const city = "Thierville-sur-Meuse";
-            const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&lang=fr&appid=${apiKey}`;
-
             try {
-                const response = await fetch(url);
+                // Coordonnées de Saint-Benoît-la-Forêt / Chinon
+                const response = await fetch("https://api.open-meteo.com/v1/forecast?latitude=47.2217&longitude=0.3236&current=temperature_2m,weather_code,wind_speed_10m&wind_speed_unit=kmh");
                 const data = await response.json();
-
-                document.getElementById('weather-loading').style.display = 'none';
-                document.getElementById('weather-content').style.display = 'flex';
-
-                document.getElementById('weather-temp').innerText = Math.round(data.main.temp) + "°C";
-                const windKmH = Math.round(data.wind.speed * 3.6);
-                document.getElementById('weather-wind').innerText = windKmH + " km/h";
                 
-                const iconCode = data.weather[0].icon;
-                document.getElementById('weather-icon').innerHTML = `<img src="https://openweathermap.org/img/wn/${iconCode}.png" alt="météo">`;
+                const temp = Math.round(data.current.temperature_2m);
+                const windKmH = Math.round(data.current.wind_speed_10m);
+                const code = data.current.weather_code;
 
-                const statusBadge = document.getElementById('flight-status');
+                // Traduction des codes météo élémentaires
+                let desc = "Météo variable";
+                if (code === 0) desc = "Ciel dégagé";
+                else if (code <= 3) desc = "Peu nuageux";
+                else if (code <= 48) desc = "Brumes";
+                else if (code <= 67) desc = "Pluie";
+                else desc = "Averses / Orages";
+
+                document.getElementById('weather-desc').innerText = `${desc} — ${temp}°C`;
+                document.getElementById('weather-wind').innerText = `💨 Vent : ${windKmH} km/h`;
+
+                // Badge indicateur de volabilité en fonction du vent
+                const statusBadge = document.getElementById('weather-status-badge');
                 if (windKmH < 15) {
                     statusBadge.innerText = "✅ Conditions Idéales";
                     statusBadge.style.background = "#27ae60";
@@ -403,6 +324,7 @@
                     statusBadge.style.background = "#e74c3c";
                 }
 
+                // Animation dynamique de la manche à air
                 const windsock = document.getElementById('windsock');
                 if (windKmH === 0) {
                     windsock.style.animation = "none";
@@ -420,11 +342,12 @@
 
         getWeather();
 
+        // Service Worker pour mode PWA Hors-ligne
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js')
                     .then((reg) => console.log('✅ SW prêt. Portée :', reg.scope))
-                    .catch((err) => console.error('❌ Échec SW :', err));
+                    .catch((err) => console.error('❌ Échec SW', err));
             });
         }
     </script>
