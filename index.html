@@ -196,6 +196,37 @@
                         </ul>
                     </div>
 
+<!-- NOUVELLE CARTE : VOLS INDOOR -->
+<div class="presence-card" style="grid-column: 1 / -1;"> <!-- Prend toute la largeur de la grille -->
+    <h3>🏟️ Inscriptions Vols Indoor (Salle Vannier)</h3>
+    <p style="margin-bottom: 10px;">Réservez votre présence pour les 4 prochains week-ends (Samedi et Dimanche de 14h à 18h).</p>
+    
+    <!-- Case à cocher pour les clés -->
+    <div style="margin-bottom: 15px; padding: 10px; background: #f8f9fa; border-radius: 5px; border-left: 4px solid var(--primary);">
+        <label style="cursor: pointer; font-weight: bold; color: var(--dark);">
+            <input type="checkbox" id="has-keys-checkbox"> 🔑 Je possède les clés de la salle
+        </label>
+        <p style="font-size: 0.85rem; margin-top: 5px; color: #555;">Cochez cette case avant de vous inscrire si vous pouvez ouvrir la salle.</p>
+    </div>
+
+    <!-- Tableau d'inscription -->
+    <div style="overflow-x: auto;">
+        <table class="indoor-table" id="indoor-table">
+            <thead>
+                <tr>
+                    <th>Date (14h - 18h)</th>
+                    <th>Membres inscrits</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="indoor-tbody">
+                <!-- Ce tableau sera rempli automatiquement par le JavaScript -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+                    
                     <div class="presence-card">
                         <h3>Événements Privés & Interclubs 2026</h3>
                         <ul class="calendar">
@@ -437,6 +468,130 @@ onValue(ref(db, 'mowing_logs'), (snapshot) => {
         mowingLogList.innerHTML = "<li>Aucun historique de tonte pour le moment.</li>";
     }
 });
+
+// ==========================================
+        // GESTION DES VOLS INDOOR (4 PROCHAINS WE)
+        // ==========================================
+        const indoorTableBody = document.getElementById('indoor-tbody');
+        
+        // 1. Calculer les 8 prochains jours de week-end (4 Samedis, 4 Dimanches)
+        function getNextWeekends() {
+            const weekends = [];
+            let currentDate = new Date();
+            currentDate.setHours(0,0,0,0);
+            
+            while (weekends.length < 8) {
+                let day = currentDate.getDay();
+                if (day === 6 || day === 0) { // 6 = Samedi, 0 = Dimanche
+                    weekends.push(new Date(currentDate));
+                }
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+            return weekends;
+        }
+
+        // 2. Formater la date pour la base de données (ex: "2026-10-24")
+        function formatDateISO(date) {
+            const d = new Date(date);
+            let month = '' + (d.getMonth() + 1);
+            let day = '' + d.getDate();
+            const year = d.getFullYear();
+            if (month.length < 2) month = '0' + month;
+            if (day.length < 2) day = '0' + day;
+            return [year, month, day].join('-');
+        }
+
+        // 3. Formater la date pour l'affichage (ex: "Samedi 24 Octobre")
+        function displayDateFR(date) {
+            const options = { weekday: 'long', day: 'numeric', month: 'long' };
+            let str = date.toLocaleDateString('fr-FR', options);
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
+
+        // 4. Fonction d'inscription / désinscription
+        function toggleIndoorRegistration(dateKey, isRegistering) {
+            if (!currentUser) return;
+            const refPath = 'indoor_flights/' + dateKey + '/' + currentUser.uid;
+            
+            if (isRegistering) {
+                // On vérifie si la personne a coché la case "clés"
+                const hasKey = document.getElementById('has-keys-checkbox').checked;
+                set(ref(db, refPath), {
+                    name: currentUser.displayName || currentUser.email,
+                    hasKey: hasKey,
+                    timestamp: Date.now()
+                });
+            } else {
+                remove(ref(db, refPath)); // Se désinscrire
+            }
+        }
+
+        // 5. Générer et mettre à jour le tableau HTML
+        function renderIndoorTable(flightsData) {
+            if (!indoorTableBody) return;
+            const weekends = getNextWeekends();
+            indoorTableBody.innerHTML = '';
+
+            weekends.forEach(date => {
+                const dateKey = formatDateISO(date);
+                const tr = document.createElement('tr');
+                
+                // --- Colonne de la Date ---
+                const tdDate = document.createElement('td');
+                tdDate.innerHTML = `<strong>${displayDateFR(date)}</strong>`;
+                
+                // --- Colonne des Inscrits ---
+                const tdInscrits = document.createElement('td');
+                let userIsRegistered = false;
+                
+                if (flightsData && flightsData[dateKey]) {
+                    Object.entries(flightsData[dateKey]).forEach(([uid, info]) => {
+                        const span = document.createElement('span');
+                        // FOND ORANGE (sans clés) ou FOND VERT (avec clés)
+                        span.className = 'user-badge ' + (info.hasKey ? 'bg-green' : 'bg-orange');
+                        span.innerText = info.name + (info.hasKey ? ' 🔑' : '');
+                        tdInscrits.appendChild(span);
+                        
+                        // Vérifier si l'utilisateur actuel est déjà inscrit à cette date
+                        if (currentUser && uid === currentUser.uid) {
+                            userIsRegistered = true;
+                        }
+                    });
+                } else {
+                    tdInscrits.innerHTML = "<span style='color: #95a5a6; font-style: italic;'>Aucun inscrit pour le moment</span>";
+                }
+                
+                // --- Colonne Action ---
+                const tdAction = document.createElement('td');
+                if (currentUser) {
+                    const btn = document.createElement('button');
+                    if (userIsRegistered) {
+                        btn.className = 'btn-small';
+                        btn.style.backgroundColor = '#e74c3c'; // Rouge pour annuler
+                        btn.innerText = 'Se désinscrire';
+                        btn.onclick = () => toggleIndoorRegistration(dateKey, false);
+                    } else {
+                        btn.className = 'btn-small';
+                        btn.style.backgroundColor = 'var(--primary)'; // Bleu pour s'inscrire
+                        btn.innerText = 'S\'inscrire';
+                        btn.onclick = () => toggleIndoorRegistration(dateKey, true);
+                    }
+                    tdAction.appendChild(btn);
+                }
+
+                tr.appendChild(tdDate);
+                tr.appendChild(tdInscrits);
+                tr.appendChild(tdAction);
+                indoorTableBody.appendChild(tr);
+            });
+        }
+
+        // 6. Écouter les données en temps réel sur Firebase
+        onValue(ref(db, 'indoor_flights/'), (snapshot) => {
+            const data = snapshot.val();
+            renderIndoorTable(data);
+        });
+        
         document.getElementById('btn-login').onclick = () => {
             const email = document.getElementById('login-email').value;
             const pass = document.getElementById('login-password').value;
