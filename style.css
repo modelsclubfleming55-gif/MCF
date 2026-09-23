@@ -295,3 +295,46 @@ nav {
             margin-bottom: 15px;
             font-style: italic;
         }
+/* --- Tableau Vols Indoor --- */
+.indoor-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    min-width: 600px; /* Force un défilement sur petit écran */
+}
+
+.indoor-table th, .indoor-table td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.indoor-table th {
+    background-color: var(--dark);
+    color: white;
+}
+
+.indoor-table tr:nth-child(even) {
+    background-color: #f8f9fa;
+}
+
+/* Cases avec le nom des inscrits */
+.user-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    margin: 3px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.bg-orange {
+    background-color: #e67e22; /* Orange : Membre normal */
+}
+
+.bg-green {
+    background-color: #27ae60; /* Vert : Membre avec clés */
+}
