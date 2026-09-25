@@ -8,7 +8,7 @@
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="style.css">
     
-    <!-- AJOUT : Styles de secours directement intégrés pour garantir l'affichage du tableau -->
+    <!-- Styles de secours et NOUVEAU CSS RESPONSIVE pour le mobile -->
     <style>
         .indoor-table { width: 100%; border-collapse: collapse; margin-top: 10px; background-color: white; text-align: left; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         .indoor-table th, .indoor-table td { padding: 12px; border-bottom: 1px solid #ddd; }
@@ -16,10 +16,35 @@
         .user-badge { display: inline-block; padding: 5px 10px; margin: 2px; border-radius: 12px; color: white; font-size: 0.85rem; font-weight: bold; }
         .bg-green { background-color: #27ae60; }
         .bg-orange { background-color: #f39c12; }
-        .btn-action-indoor { padding: 8px 14px; border: none; border-radius: 5px; color: white; cursor: pointer; font-size: 0.9rem; font-weight: bold; transition: opacity 0.2s; width: 100%; max-width: 150px;}
+        .btn-action-indoor { padding: 10px 14px; border: none; border-radius: 5px; color: white; cursor: pointer; font-size: 0.95rem; font-weight: bold; transition: opacity 0.2s; width: 100%; max-width: 200px; }
         .btn-action-indoor:hover { opacity: 0.8; }
         .btn-register { background-color: #3498db; } /* Bleu */
         .btn-unregister { background-color: #e74c3c; } /* Rouge */
+
+        /* ==========================================
+           MAGIE MOBILE : Transformation du tableau en cartes
+           ========================================== */
+        @media screen and (max-width: 768px) {
+            .indoor-table thead { display: none; } /* On cache les en-têtes (Date, Inscrits, Action) */
+            .indoor-table tr { 
+                display: flex; 
+                flex-direction: column; 
+                margin-bottom: 15px; 
+                border: 1px solid #ccc; 
+                border-radius: 8px; 
+                padding: 15px; 
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            }
+            .indoor-table td { display: block; text-align: center; border: none; padding: 5px 0; }
+            .td-date { font-size: 1.2rem; border-bottom: 1px dashed #ccc !important; padding-bottom: 10px !important; margin-bottom: 10px; color: var(--primary); }
+            .td-inscrits { min-height: 40px; margin-bottom: 10px; } 
+            .td-action { width: 100%; }
+            .btn-action-indoor { 
+                max-width: 100%; /* Le bouton prend toute la largeur sur téléphone */
+                padding: 15px; /* Bouton beaucoup plus haut pour les doigts */
+                font-size: 1.1rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -215,19 +240,20 @@
                         <p style="margin-bottom: 10px;">Réservez votre présence pour les 4 prochains week-ends (Samedi et Dimanche de 14h à 18h).</p>
                         
                         <div style="margin-bottom: 15px; padding: 10px; background: #f8f9fa; border-radius: 5px; border-left: 4px solid var(--primary);">
-                            <label style="cursor: pointer; font-weight: bold; color: var(--dark);">
-                                <input type="checkbox" id="has-keys-checkbox"> 🔑 Je possède les clés de la salle
+                            <label style="cursor: pointer; font-weight: bold; color: var(--dark); display: block; padding: 5px;">
+                                <input type="checkbox" id="has-keys-checkbox" style="transform: scale(1.2); margin-right: 8px;"> 🔑 Je possède les clés de la salle
                             </label>
                             <p style="font-size: 0.85rem; margin-top: 5px; color: #555;">Cochez cette case avant de vous inscrire si vous pouvez ouvrir la salle.</p>
                         </div>
 
-                        <div style="overflow-x: auto;">
+                        <!-- On retire le overflow-x: auto qui bloquait les clics sur mobile -->
+                        <div>
                             <table class="indoor-table" id="indoor-table">
                                 <thead>
                                     <tr>
                                         <th>Date (14h - 18h)</th>
                                         <th>Membres inscrits</th>
-                                        <th style="width: 150px;">Action</th>
+                                        <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody id="indoor-tbody">
@@ -298,7 +324,7 @@
         let currentUser = null;
         let amIPresent = false;
         let isMowing = false;
-        let latestIndoorData = null; // Variable cruciale pour le tableau
+        let latestIndoorData = null; 
 
         const loginBox = document.getElementById('login-form');
         const loggedBox = document.getElementById('user-logged');
@@ -320,7 +346,7 @@
             let currentDate = new Date();
             currentDate.setHours(0,0,0,0);
             
-            let limit = 0; // Sécurité contre les boucles infinies
+            let limit = 0;
             while (weekends.length < 8 && limit < 100) {
                 let day = currentDate.getDay();
                 if (day === 6 || day === 0) { 
@@ -365,12 +391,8 @@
         }
 
         function renderIndoorTable(flightsData) {
-            // On récupère l'élément HTML *à l'intérieur* de la fonction pour être sûr qu'il existe
             const indoorTableBody = document.getElementById('indoor-tbody');
-            if (!indoorTableBody) {
-                console.warn("L'élément indoor-tbody est introuvable !");
-                return;
-            }
+            if (!indoorTableBody) return;
             
             const weekends = getNextWeekends();
             indoorTableBody.innerHTML = '';
@@ -379,10 +401,13 @@
                 const dateKey = formatDateISO(date);
                 const tr = document.createElement('tr');
                 
+                // NOUVEAU : Ajout des classes (td-date, td-inscrits, td-action) pour cibler sur mobile
                 const tdDate = document.createElement('td');
+                tdDate.className = 'td-date';
                 tdDate.innerHTML = `<strong>${displayDateFR(date)}</strong>`;
                 
                 const tdInscrits = document.createElement('td');
+                tdInscrits.className = 'td-inscrits';
                 let userIsRegistered = false;
                 
                 if (flightsData && flightsData[dateKey]) {
@@ -397,21 +422,30 @@
                         }
                     });
                 } else {
-                    tdInscrits.innerHTML = "<span style='color: #95a5a6; font-style: italic;'>Aucun inscrit pour le moment</span>";
+                    tdInscrits.innerHTML = "<span style='color: #95a5a6; font-style: italic;'>Aucun inscrit</span>";
                 }
                 
                 const tdAction = document.createElement('td');
+                tdAction.className = 'td-action';
                 if (currentUser) {
                     const btn = document.createElement('button');
-                    // Utilisation des classes CSS injectées en haut du fichier
+                    btn.type = 'button'; // Sécurité supplémentaire pour éviter les rechargements de page
+                    
                     if (userIsRegistered) {
                         btn.className = 'btn-action-indoor btn-unregister';
                         btn.innerText = 'Se désinscrire';
-                        btn.onclick = () => toggleIndoorRegistration(dateKey, false);
+                        // Remplacement de onclick par addEventListener pour une meilleure compatibilité mobile
+                        btn.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            toggleIndoorRegistration(dateKey, false);
+                        });
                     } else {
                         btn.className = 'btn-action-indoor btn-register';
                         btn.innerText = 'S\'inscrire';
-                        btn.onclick = () => toggleIndoorRegistration(dateKey, true);
+                        btn.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            toggleIndoorRegistration(dateKey, true);
+                        });
                     }
                     tdAction.appendChild(btn);
                 }
@@ -421,7 +455,6 @@
                 tr.appendChild(tdAction);
                 indoorTableBody.appendChild(tr);
             });
-            console.log("Tableau Indoor rendu avec succès !");
         }
 
         // ==========================================
@@ -437,7 +470,6 @@
                 publicMessage.style.display = 'none';
                 userDisplayName.innerText = user.displayName || user.email;
 
-                // On force le rendu pour ajouter les boutons maintenant qu'on est connecté
                 renderIndoorTable(latestIndoorData);
 
                 const userRef = ref(db, 'presence/' + user.uid);
@@ -452,7 +484,6 @@
                 publicMessage.style.display = 'block';
                 amIPresent = false;
 
-                // On force le rendu pour retirer les boutons
                 renderIndoorTable(latestIndoorData);
             }
         });
@@ -461,8 +492,6 @@
         onValue(ref(db, 'indoor_flights/'), (snapshot) => {
             latestIndoorData = snapshot.val();
             renderIndoorTable(latestIndoorData);
-        }, (error) => {
-            console.error("Erreur de lecture Indoor :", error);
         });
 
         // Ecouteur Présence terrain
