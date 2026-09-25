@@ -7,6 +7,20 @@
     <title>Models Club Fleming | Passion Aéro Modélisme</title>
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="style.css">
+    
+    <!-- AJOUT : Styles de secours directement intégrés pour garantir l'affichage du tableau -->
+    <style>
+        .indoor-table { width: 100%; border-collapse: collapse; margin-top: 10px; background-color: white; text-align: left; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .indoor-table th, .indoor-table td { padding: 12px; border-bottom: 1px solid #ddd; }
+        .indoor-table th { background-color: #f8f9fa; color: #2c3e50; font-weight: bold; }
+        .user-badge { display: inline-block; padding: 5px 10px; margin: 2px; border-radius: 12px; color: white; font-size: 0.85rem; font-weight: bold; }
+        .bg-green { background-color: #27ae60; }
+        .bg-orange { background-color: #f39c12; }
+        .btn-action-indoor { padding: 8px 14px; border: none; border-radius: 5px; color: white; cursor: pointer; font-size: 0.9rem; font-weight: bold; transition: opacity 0.2s; width: 100%; max-width: 150px;}
+        .btn-action-indoor:hover { opacity: 0.8; }
+        .btn-register { background-color: #3498db; } /* Bleu */
+        .btn-unregister { background-color: #e74c3c; } /* Rouge */
+    </style>
 </head>
 <body>
 
@@ -182,13 +196,12 @@
                             <div id="mowing-status-alert" style="display: none; background-color: #fff3cd; color: #856404; border-left: 5px solid #ffc107; padding: 12px; border-radius: 4px; font-weight: bold; text-align: center; font-size: 0.95rem;">
                                 ⚠️ TONTE EN COURS SUR LA PISTE !
                             </div>
-                            <!-- NOUVEAU : Journal de tonte -->
-<details style="margin-top: 15px; text-align: left; background: #fff; padding: 10px; border-radius: 5px; border: 1px solid #ddd;">
-    <summary style="cursor: pointer; color: var(--primary); font-weight: bold;">📖 Afficher le journal des tontes</summary>
-    <ul id="mowing-log-list" style="list-style-type: none; padding-left: 0; margin-top: 10px; font-size: 0.85rem; max-height: 150px; overflow-y: auto;">
-        <li>Chargement de l'historique...</li>
-    </ul>
-</details>
+                            <details style="margin-top: 15px; text-align: left; background: #fff; padding: 10px; border-radius: 5px; border: 1px solid #ddd;">
+                                <summary style="cursor: pointer; color: var(--primary); font-weight: bold;">📖 Afficher le journal des tontes</summary>
+                                <ul id="mowing-log-list" style="list-style-type: none; padding-left: 0; margin-top: 10px; font-size: 0.85rem; max-height: 150px; overflow-y: auto;">
+                                    <li>Chargement de l'historique...</li>
+                                </ul>
+                            </details>
                         </div>
 
                         <h3 style="margin-top: 20px; border-top: 2px dashed #ccc; padding-top: 15px; margin-bottom: 10px;">👥 Membres présents</h3>
@@ -196,36 +209,33 @@
                         </ul>
                     </div>
 
-<!-- NOUVELLE CARTE : VOLS INDOOR -->
-<div class="presence-card" style="grid-column: 1 / -1;"> <!-- Prend toute la largeur de la grille -->
-    <h3>🏟️ Inscriptions Vols Indoor (Salle Vannier)</h3>
-    <p style="margin-bottom: 10px;">Réservez votre présence pour les 4 prochains week-ends (Samedi et Dimanche de 14h à 18h).</p>
-    
-    <!-- Case à cocher pour les clés -->
-    <div style="margin-bottom: 15px; padding: 10px; background: #f8f9fa; border-radius: 5px; border-left: 4px solid var(--primary);">
-        <label style="cursor: pointer; font-weight: bold; color: var(--dark);">
-            <input type="checkbox" id="has-keys-checkbox"> 🔑 Je possède les clés de la salle
-        </label>
-        <p style="font-size: 0.85rem; margin-top: 5px; color: #555;">Cochez cette case avant de vous inscrire si vous pouvez ouvrir la salle.</p>
-    </div>
+                    <!-- CARTE : VOLS INDOOR -->
+                    <div class="presence-card" style="grid-column: 1 / -1;">
+                        <h3>🏟️ Inscriptions Vols Indoor (Salle Vannier)</h3>
+                        <p style="margin-bottom: 10px;">Réservez votre présence pour les 4 prochains week-ends (Samedi et Dimanche de 14h à 18h).</p>
+                        
+                        <div style="margin-bottom: 15px; padding: 10px; background: #f8f9fa; border-radius: 5px; border-left: 4px solid var(--primary);">
+                            <label style="cursor: pointer; font-weight: bold; color: var(--dark);">
+                                <input type="checkbox" id="has-keys-checkbox"> 🔑 Je possède les clés de la salle
+                            </label>
+                            <p style="font-size: 0.85rem; margin-top: 5px; color: #555;">Cochez cette case avant de vous inscrire si vous pouvez ouvrir la salle.</p>
+                        </div>
 
-    <!-- Tableau d'inscription -->
-    <div style="overflow-x: auto;">
-        <table class="indoor-table" id="indoor-table">
-            <thead>
-                <tr>
-                    <th>Date (14h - 18h)</th>
-                    <th>Membres inscrits</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody id="indoor-tbody">
-                <!-- Ce tableau sera rempli automatiquement par le JavaScript -->
-            </tbody>
-        </table>
-    </div>
-</div>
-
+                        <div style="overflow-x: auto;">
+                            <table class="indoor-table" id="indoor-table">
+                                <thead>
+                                    <tr>
+                                        <th>Date (14h - 18h)</th>
+                                        <th>Membres inscrits</th>
+                                        <th style="width: 150px;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="indoor-tbody">
+                                    <!-- Ce tableau sera rempli automatiquement par le JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                     
                     <div class="presence-card">
                         <h3>Événements Privés & Interclubs 2026</h3>
@@ -239,26 +249,15 @@
                         <h3>📢 Bulletin d'information & Documents</h3>
                         <ul class="calendar">
                             <li><strong>29 Mai 18h30:</strong> Assemblée Générale.</li>
-                            
                         </ul>
                         <h4 style="margin-top: 20px; margin-bottom: 10px; color: var(--dark);">📁 Documents utiles (PDF)</h4>
                         <div style="display: flex; flex-direction: column; gap: 10px;">
-                            <a href="documents/juillet 2026.pdf" target="_blank" class="btn-small" style="background-color: #7f8c8d; text-align: center; display: block; text-decoration: none; color: white;">
-                                📄 infos Club - Juillet 2026
-                            </a><a href="documents/juin 2026.pdf" target="_blank" class="btn-small" style="background-color: #7f8c8d; text-align: center; display: block; text-decoration: none; color: white;">
-                                📄 infos Club - Juin 2026
-                            </a>
-                             <a href="documents/Assemblée 29 mai 2026.pdf" target="_blank" class="btn-small" style="background-color: #7f8c8d; text-align: center; display: block; text-decoration: none; color: white;">
-                                📄 CR AG du 29 mai 2026
-                            </a><a href="documents/air doudou 2026.pdf" target="_blank" class="btn-small" style="background-color: #7f8c8d; text-align: center; display: block; text-decoration: none; color: white;">
-                                📄 affiche Air Doudou 2026
-                            </a>
-                            <a href="documents/infos Club Mai 2026.pdf" target="_blank" class="btn-small" style="background-color: #7f8c8d; text-align: center; display: block; text-decoration: none; color: white;">
-                                📄 infos Club - Mai 2026
-                            </a>
-                            <a href="documents/reglement2026.pdf" target="_blank" class="btn-small" style="background-color: #7f8c8d; text-align: center; display: block; text-decoration: none; color: white;">
-                                📄 Règlement Intérieur du Club
-                            </a>
+                            <a href="documents/juillet 2026.pdf" target="_blank" class="btn-small" style="background-color: #7f8c8d; text-align: center; display: block; text-decoration: none; color: white;">📄 infos Club - Juillet 2026</a>
+                            <a href="documents/juin 2026.pdf" target="_blank" class="btn-small" style="background-color: #7f8c8d; text-align: center; display: block; text-decoration: none; color: white;">📄 infos Club - Juin 2026</a>
+                            <a href="documents/Assemblée 29 mai 2026.pdf" target="_blank" class="btn-small" style="background-color: #7f8c8d; text-align: center; display: block; text-decoration: none; color: white;">📄 CR AG du 29 mai 2026</a>
+                            <a href="documents/air doudou 2026.pdf" target="_blank" class="btn-small" style="background-color: #7f8c8d; text-align: center; display: block; text-decoration: none; color: white;">📄 affiche Air Doudou 2026</a>
+                            <a href="documents/infos Club Mai 2026.pdf" target="_blank" class="btn-small" style="background-color: #7f8c8d; text-align: center; display: block; text-decoration: none; color: white;">📄 infos Club - Mai 2026</a>
+                            <a href="documents/reglement2026.pdf" target="_blank" class="btn-small" style="background-color: #7f8c8d; text-align: center; display: block; text-decoration: none; color: white;">📄 Règlement Intérieur du Club</a>
                         </div>
                     </div>
 
@@ -298,8 +297,8 @@
 
         let currentUser = null;
         let amIPresent = false;
-        let isMowing = false; // AJOUT : État local pour la tonte
-        let latestIndoorData = null; // AJOUT : Stocke les dernières données du tableau
+        let isMowing = false;
+        let latestIndoorData = null; // Variable cruciale pour le tableau
 
         const loginBox = document.getElementById('login-form');
         const loggedBox = document.getElementById('user-logged');
@@ -309,9 +308,125 @@
         const listElement = document.getElementById('members-list');
         const userDisplayName = document.getElementById('user-display-name');
         
-        // AJOUT : Éléments DOM pour la tonte
         const mowingBtn = document.getElementById('mowing-btn');
         const mowingAlert = document.getElementById('mowing-status-alert');
+
+        // ==========================================
+        // GESTION DU TABLEAU INDOOR
+        // ==========================================
+
+        function getNextWeekends() {
+            const weekends = [];
+            let currentDate = new Date();
+            currentDate.setHours(0,0,0,0);
+            
+            let limit = 0; // Sécurité contre les boucles infinies
+            while (weekends.length < 8 && limit < 100) {
+                let day = currentDate.getDay();
+                if (day === 6 || day === 0) { 
+                    weekends.push(new Date(currentDate));
+                }
+                currentDate.setDate(currentDate.getDate() + 1);
+                limit++;
+            }
+            return weekends;
+        }
+
+        function formatDateISO(date) {
+            const d = new Date(date);
+            let month = '' + (d.getMonth() + 1);
+            let day = '' + d.getDate();
+            const year = d.getFullYear();
+            if (month.length < 2) month = '0' + month;
+            if (day.length < 2) day = '0' + day;
+            return [year, month, day].join('-');
+        }
+
+        function displayDateFR(date) {
+            const options = { weekday: 'long', day: 'numeric', month: 'long' };
+            let str = date.toLocaleDateString('fr-FR', options);
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
+
+        function toggleIndoorRegistration(dateKey, isRegistering) {
+            if (!currentUser) return;
+            const refPath = 'indoor_flights/' + dateKey + '/' + currentUser.uid;
+            
+            if (isRegistering) {
+                const hasKey = document.getElementById('has-keys-checkbox').checked;
+                set(ref(db, refPath), {
+                    name: currentUser.displayName || currentUser.email,
+                    hasKey: hasKey,
+                    timestamp: Date.now()
+                }).catch(err => console.error("Erreur Firebase Set:", err));
+            } else {
+                remove(ref(db, refPath)).catch(err => console.error("Erreur Firebase Remove:", err));
+            }
+        }
+
+        function renderIndoorTable(flightsData) {
+            // On récupère l'élément HTML *à l'intérieur* de la fonction pour être sûr qu'il existe
+            const indoorTableBody = document.getElementById('indoor-tbody');
+            if (!indoorTableBody) {
+                console.warn("L'élément indoor-tbody est introuvable !");
+                return;
+            }
+            
+            const weekends = getNextWeekends();
+            indoorTableBody.innerHTML = '';
+
+            weekends.forEach(date => {
+                const dateKey = formatDateISO(date);
+                const tr = document.createElement('tr');
+                
+                const tdDate = document.createElement('td');
+                tdDate.innerHTML = `<strong>${displayDateFR(date)}</strong>`;
+                
+                const tdInscrits = document.createElement('td');
+                let userIsRegistered = false;
+                
+                if (flightsData && flightsData[dateKey]) {
+                    Object.entries(flightsData[dateKey]).forEach(([uid, info]) => {
+                        const span = document.createElement('span');
+                        span.className = 'user-badge ' + (info.hasKey ? 'bg-green' : 'bg-orange');
+                        span.innerText = info.name + (info.hasKey ? ' 🔑' : '');
+                        tdInscrits.appendChild(span);
+                        
+                        if (currentUser && uid === currentUser.uid) {
+                            userIsRegistered = true;
+                        }
+                    });
+                } else {
+                    tdInscrits.innerHTML = "<span style='color: #95a5a6; font-style: italic;'>Aucun inscrit pour le moment</span>";
+                }
+                
+                const tdAction = document.createElement('td');
+                if (currentUser) {
+                    const btn = document.createElement('button');
+                    // Utilisation des classes CSS injectées en haut du fichier
+                    if (userIsRegistered) {
+                        btn.className = 'btn-action-indoor btn-unregister';
+                        btn.innerText = 'Se désinscrire';
+                        btn.onclick = () => toggleIndoorRegistration(dateKey, false);
+                    } else {
+                        btn.className = 'btn-action-indoor btn-register';
+                        btn.innerText = 'S\'inscrire';
+                        btn.onclick = () => toggleIndoorRegistration(dateKey, true);
+                    }
+                    tdAction.appendChild(btn);
+                }
+
+                tr.appendChild(tdDate);
+                tr.appendChild(tdInscrits);
+                tr.appendChild(tdAction);
+                indoorTableBody.appendChild(tr);
+            });
+            console.log("Tableau Indoor rendu avec succès !");
+        }
+
+        // ==========================================
+        // GESTION DE L'AUTHENTIFICATION & ECOUTEURS
+        // ==========================================
 
         onAuthStateChanged(auth, (user) => {
             currentUser = user;
@@ -322,7 +437,7 @@
                 publicMessage.style.display = 'none';
                 userDisplayName.innerText = user.displayName || user.email;
 
-                // NOUVEAU: Mettre à jour le tableau avec l'utilisateur connecté pour afficher les boutons
+                // On force le rendu pour ajouter les boutons maintenant qu'on est connecté
                 renderIndoorTable(latestIndoorData);
 
                 const userRef = ref(db, 'presence/' + user.uid);
@@ -337,11 +452,20 @@
                 publicMessage.style.display = 'block';
                 amIPresent = false;
 
-                // NOUVEAU: Mettre à jour le tableau sans utilisateur pour masquer les boutons
+                // On force le rendu pour retirer les boutons
                 renderIndoorTable(latestIndoorData);
             }
         });
 
+        // Ecouteur Indoor
+        onValue(ref(db, 'indoor_flights/'), (snapshot) => {
+            latestIndoorData = snapshot.val();
+            renderIndoorTable(latestIndoorData);
+        }, (error) => {
+            console.error("Erreur de lecture Indoor :", error);
+        });
+
+        // Ecouteur Présence terrain
         onValue(ref(db, 'presence/'), (snapshot) => {
             listElement.innerHTML = "";
             const data = snapshot.val();
@@ -358,247 +482,49 @@
             }
         });
 
-        // AJOUT : Écouteur en temps réel du statut de la tonte dans Firebase
+        // Ecouteur Tonte en cours
         onValue(ref(db, 'status/mowing'), (snapshot) => {
             const data = snapshot.val();
             isMowing = data ? data.active : false;
             
             if (isMowing) {
                 mowingBtn.innerText = "Tonte terminée 🛑";
-                mowingBtn.style.background = "#e74c3c"; // Rouge pour arrêter
-                mowingAlert.style.display = "block";    // Affiche le bandeau d'alerte
+                mowingBtn.style.background = "#e74c3c";
+                mowingAlert.style.display = "block";
                 if(data.by) {
                     mowingAlert.innerHTML = `⚠️ TONTE EN COURS SUR LA PISTE !<br><small style="font-weight:normal; font-size:0.8rem;">Signalé par : ${data.by}</small>`;
                 }
             } else {
                 mowingBtn.innerText = "Signaler tonte en cours 🚜";
-                mowingBtn.style.background = "#27ae60"; // Vert pour démarrer
-                mowingAlert.style.display = "none";     // Cache l'alerte
+                mowingBtn.style.background = "#27ae60";
+                mowingAlert.style.display = "none";
             }
         });
 
-        presenceBtn.onclick = async () => {
-            if (!currentUser) return;
-
-            if (!currentUser.displayName) {
-                const actingName = prompt("Veuillez saisir votre Prénom :");
-                if (!actingName) return;
-
-                try {
-                    await updateProfile(currentUser, { displayName: actingName });
-                    userDisplayName.innerText = actingName;
-                } catch (err) {
-                    console.error("Erreur profil:", err);
-                }
-            }
-
-            const userRef = ref(db, 'presence/' + currentUser.uid);
-
-            if (!amIPresent) {
-                set(userRef, {
-                    name: currentUser.displayName,
-                    timestamp: Date.now()
-                }).then(() => {
-                    amIPresent = true;
-                    updateButtonUI(true);
-                });
-            } else {
-                remove(userRef).then(() => {
-                    amIPresent = false;
-                    updateButtonUI(false);
-                });
-            }
-        };
-
-// AJOUT : Gestion du clic sur le bouton de tonte avec historique
-mowingBtn.onclick = () => {
-    if (!currentUser) return;
-    const mowingRef = ref(db, 'status/mowing');
-    const logRef = ref(db, 'mowing_logs'); // Référence pour le journal
-    const userName = currentUser.displayName || currentUser.email;
-    
-    if (!isMowing) {
-        // Activer le signal de tonte
-        set(mowingRef, {
-            active: true,
-            by: userName,
-            timestamp: Date.now()
-        });
-        // Ajouter au journal (Début)
-        push(logRef, {
-            action: 'Début',
-            by: userName,
-            timestamp: Date.now()
-        });
-    } else {
-        // Désactiver le signal de tonte
-        set(mowingRef, {
-            active: false,
-            timestamp: Date.now()
-        });
-        // Ajouter au journal (Fin)
-        push(logRef, {
-            action: 'Fin',
-            by: userName,
-            timestamp: Date.now()
-        });
-    }
-};
-// AJOUT : Écouteur pour afficher le journal de tonte
-const mowingLogList = document.getElementById('mowing-log-list');
-
-onValue(ref(db, 'mowing_logs'), (snapshot) => {
-    mowingLogList.innerHTML = "";
-    const data = snapshot.val();
-    
-    if (data) {
-        // Convertir l'objet Firebase en tableau et trier du plus récent au plus ancien
-        const logs = Object.values(data).filter(log => log.action === 'Début').sort((a, b) => b.timestamp - a.timestamp);
-        
-        // Afficher les 20 derniers événements
-        logs.slice(0, 20).forEach(log => {
-            const li = document.createElement('li');
-            li.style.padding = "6px 0";
-            li.style.borderBottom = "1px solid #eee";
-            
-            // Formatage de la date (ex: 29/05/2026 10:30)
-            const date = new Date(log.timestamp).toLocaleString('fr-FR', {
-                day: '2-digit', month: '2-digit', year: 'numeric',
-                hour: '2-digit', minute: '2-digit'
-            });
-            
-            const icon = log.action === 'Début' ? '🚜' : '🔴';
-            li.innerHTML = `${icon} <strong>${date}</strong> : Tonte effectuée par ${log.by} `;
-            mowingLogList.appendChild(li);
-        });
-    } else {
-        mowingLogList.innerHTML = "<li>Aucun historique de tonte pour le moment.</li>";
-    }
-});
-
-// ==========================================
-        // GESTION DES VOLS INDOOR (4 PROCHAINS WE)
-        // ==========================================
-        const indoorTableBody = document.getElementById('indoor-tbody');
-        
-        // 1. Calculer les 8 prochains jours de week-end (4 Samedis, 4 Dimanches)
-        function getNextWeekends() {
-            const weekends = [];
-            let currentDate = new Date();
-            currentDate.setHours(0,0,0,0);
-            
-            while (weekends.length < 8) {
-                let day = currentDate.getDay();
-                if (day === 6 || day === 0) { // 6 = Samedi, 0 = Dimanche
-                    weekends.push(new Date(currentDate));
-                }
-                currentDate.setDate(currentDate.getDate() + 1);
-            }
-            return weekends;
-        }
-
-        // 2. Formater la date pour la base de données (ex: "2026-10-24")
-        function formatDateISO(date) {
-            const d = new Date(date);
-            let month = '' + (d.getMonth() + 1);
-            let day = '' + d.getDate();
-            const year = d.getFullYear();
-            if (month.length < 2) month = '0' + month;
-            if (day.length < 2) day = '0' + day;
-            return [year, month, day].join('-');
-        }
-
-        // 3. Formater la date pour l'affichage (ex: "Samedi 24 Octobre")
-        function displayDateFR(date) {
-            const options = { weekday: 'long', day: 'numeric', month: 'long' };
-            let str = date.toLocaleDateString('fr-FR', options);
-            return str.charAt(0).toUpperCase() + str.slice(1);
-        }
-
-        // 4. Fonction d'inscription / désinscription
-        function toggleIndoorRegistration(dateKey, isRegistering) {
-            if (!currentUser) return;
-            const refPath = 'indoor_flights/' + dateKey + '/' + currentUser.uid;
-            
-            if (isRegistering) {
-                // On vérifie si la personne a coché la case "clés"
-                const hasKey = document.getElementById('has-keys-checkbox').checked;
-                set(ref(db, refPath), {
-                    name: currentUser.displayName || currentUser.email,
-                    hasKey: hasKey,
-                    timestamp: Date.now()
-                });
-            } else {
-                remove(ref(db, refPath)); // Se désinscrire
-            }
-        }
-
-        // 5. Générer et mettre à jour le tableau HTML
-        function renderIndoorTable(flightsData) {
-            if (!indoorTableBody) return;
-            const weekends = getNextWeekends();
-            indoorTableBody.innerHTML = '';
-
-            weekends.forEach(date => {
-                const dateKey = formatDateISO(date);
-                const tr = document.createElement('tr');
-                
-                // --- Colonne de la Date ---
-                const tdDate = document.createElement('td');
-                tdDate.innerHTML = `<strong>${displayDateFR(date)}</strong>`;
-                
-                // --- Colonne des Inscrits ---
-                const tdInscrits = document.createElement('td');
-                let userIsRegistered = false;
-                
-                if (flightsData && flightsData[dateKey]) {
-                    Object.entries(flightsData[dateKey]).forEach(([uid, info]) => {
-                        const span = document.createElement('span');
-                        // FOND ORANGE (sans clés) ou FOND VERT (avec clés)
-                        span.className = 'user-badge ' + (info.hasKey ? 'bg-green' : 'bg-orange');
-                        span.innerText = info.name + (info.hasKey ? ' 🔑' : '');
-                        tdInscrits.appendChild(span);
-                        
-                        // Vérifier si l'utilisateur actuel est déjà inscrit à cette date
-                        if (currentUser && uid === currentUser.uid) {
-                            userIsRegistered = true;
-                        }
+        // Historique de tonte
+        const mowingLogList = document.getElementById('mowing-log-list');
+        onValue(ref(db, 'mowing_logs'), (snapshot) => {
+            mowingLogList.innerHTML = "";
+            const data = snapshot.val();
+            if (data) {
+                const logs = Object.values(data).filter(log => log.action === 'Début').sort((a, b) => b.timestamp - a.timestamp);
+                logs.slice(0, 20).forEach(log => {
+                    const li = document.createElement('li');
+                    li.style.padding = "6px 0";
+                    li.style.borderBottom = "1px solid #eee";
+                    const date = new Date(log.timestamp).toLocaleString('fr-FR', {
+                        day: '2-digit', month: '2-digit', year: 'numeric',
+                        hour: '2-digit', minute: '2-digit'
                     });
-                } else {
-                    tdInscrits.innerHTML = "<span style='color: #95a5a6; font-style: italic;'>Aucun inscrit pour le moment</span>";
-                }
-                
-                // --- Colonne Action ---
-                const tdAction = document.createElement('td');
-                if (currentUser) {
-                    const btn = document.createElement('button');
-                    if (userIsRegistered) {
-                        btn.className = 'btn-small';
-                        btn.style.backgroundColor = '#e74c3c'; // Rouge pour annuler
-                        btn.innerText = 'Se désinscrire';
-                        btn.onclick = () => toggleIndoorRegistration(dateKey, false);
-                    } else {
-                        btn.className = 'btn-small';
-                        btn.style.backgroundColor = 'var(--primary)'; // Bleu pour s'inscrire
-                        btn.innerText = 'S\'inscrire';
-                        btn.onclick = () => toggleIndoorRegistration(dateKey, true);
-                    }
-                    tdAction.appendChild(btn);
-                }
-
-                tr.appendChild(tdDate);
-                tr.appendChild(tdInscrits);
-                tr.appendChild(tdAction);
-                indoorTableBody.appendChild(tr);
-            });
-        }
-
-        // 6. Écouter les données en temps réel sur Firebase (MODIFIÉ)
-        onValue(ref(db, 'indoor_flights/'), (snapshot) => {
-            latestIndoorData = snapshot.val();
-            renderIndoorTable(latestIndoorData);
+                    const icon = log.action === 'Début' ? '🚜' : '🔴';
+                    li.innerHTML = `${icon} <strong>${date}</strong> : Tonte effectuée par ${log.by} `;
+                    mowingLogList.appendChild(li);
+                });
+            } else {
+                mowingLogList.innerHTML = "<li>Aucun historique de tonte pour le moment.</li>";
+            }
         });
-        
+
         document.getElementById('btn-login').onclick = () => {
             const email = document.getElementById('login-email').value;
             const pass = document.getElementById('login-password').value;
@@ -618,58 +544,73 @@ onValue(ref(db, 'mowing_logs'), (snapshot) => {
             }
         }
 
+        presenceBtn.onclick = async () => {
+            if (!currentUser) return;
+            if (!currentUser.displayName) {
+                const actingName = prompt("Veuillez saisir votre Prénom :");
+                if (!actingName) return;
+                try {
+                    await updateProfile(currentUser, { displayName: actingName });
+                    userDisplayName.innerText = actingName;
+                } catch (err) { console.error("Erreur profil:", err); }
+            }
+            const userRef = ref(db, 'presence/' + currentUser.uid);
+            if (!amIPresent) {
+                set(userRef, { name: currentUser.displayName, timestamp: Date.now() })
+                    .then(() => { amIPresent = true; updateButtonUI(true); });
+            } else {
+                remove(userRef).then(() => { amIPresent = false; updateButtonUI(false); });
+            }
+        };
+
+        mowingBtn.onclick = () => {
+            if (!currentUser) return;
+            const mowingRef = ref(db, 'status/mowing');
+            const logRef = ref(db, 'mowing_logs');
+            const userName = currentUser.displayName || currentUser.email;
+            
+            if (!isMowing) {
+                set(mowingRef, { active: true, by: userName, timestamp: Date.now() });
+                push(logRef, { action: 'Début', by: userName, timestamp: Date.now() });
+            } else {
+                set(mowingRef, { active: false, timestamp: Date.now() });
+                push(logRef, { action: 'Fin', by: userName, timestamp: Date.now() });
+            }
+        };
+
         async function getWeather() {
             const apiKey = "24f6a9d02f6b203305d4609786f8b512";
             const city = "Thierville-sur-Meuse";
             const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&lang=fr&appid=${apiKey}`;
-
             try {
                 const response = await fetch(url);
                 const data = await response.json();
-
                 document.getElementById('weather-loading').style.display = 'none';
                 document.getElementById('weather-content').style.display = 'flex';
-
                 document.getElementById('weather-temp').innerText = Math.round(data.main.temp) + "°C";
                 const windKmH = Math.round(data.wind.speed * 3.6);
                 document.getElementById('weather-wind').innerText = windKmH + " km/h";
                 
                 const iconCode = data.weather[0].icon;
                 document.getElementById('weather-icon').innerHTML = `<img src="https://openweathermap.org/img/wn/${iconCode}.png" alt="météo">`;
-
                 const statusBadge = document.getElementById('flight-status');
-                if (windKmH < 20) {
-                    statusBadge.innerText = "✅ Conditions Idéales";
-                    statusBadge.style.background = "#27ae60";
-                } else if (windKmH < 40) {
-                    statusBadge.innerText = "⚠️ Vent soutenu";
-                    statusBadge.style.background = "#f39c12";
-                } else {
-                    statusBadge.innerText = "🚩 Trop de vent !";
-                    statusBadge.style.background = "#e74c3c";
-                }
-
+                if (windKmH < 20) { statusBadge.innerText = "✅ Conditions Idéales"; statusBadge.style.background = "#27ae60"; }
+                else if (windKmH < 40) { statusBadge.innerText = "⚠️ Vent soutenu"; statusBadge.style.background = "#f39c12"; }
+                else { statusBadge.innerText = "🚩 Trop de vent !"; statusBadge.style.background = "#e74c3c"; }
+                
                 const windsock = document.getElementById('windsock');
-                if (windKmH === 0) {
-                    windsock.style.animation = "none";
-                } else if (windKmH < 20) {
-                    windsock.style.animation = "wave 2s ease-in-out infinite";
-                } else if (windKmH < 40) {
-                    windsock.style.animation = "wave 0.8s ease-in-out infinite";
-                } else {
-                    windsock.style.animation = "wave 0.3s ease-in-out infinite";
-                }
-            } catch (error) {
-                console.error("Erreur météo:", error);
-            }
+                if (windKmH === 0) windsock.style.animation = "none";
+                else if (windKmH < 20) windsock.style.animation = "wave 2s ease-in-out infinite";
+                else if (windKmH < 40) windsock.style.animation = "wave 0.8s ease-in-out infinite";
+                else windsock.style.animation = "wave 0.3s ease-in-out infinite";
+            } catch (error) { console.error("Erreur météo:", error); }
         }
-
         getWeather();
 
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js')
-                    .then((reg) => console.log('✅ SW prêt. Portée :', reg.scope))
+                    .then((reg) => console.log('✅ SW prêt.'))
                     .catch((err) => console.error('❌ Échec SW :', err));
             });
         }
