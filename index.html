@@ -299,6 +299,7 @@
         let currentUser = null;
         let amIPresent = false;
         let isMowing = false; // AJOUT : État local pour la tonte
+        let latestIndoorData = null; // AJOUT : Stocke les dernières données du tableau
 
         const loginBox = document.getElementById('login-form');
         const loggedBox = document.getElementById('user-logged');
@@ -321,6 +322,9 @@
                 publicMessage.style.display = 'none';
                 userDisplayName.innerText = user.displayName || user.email;
 
+                // NOUVEAU: Mettre à jour le tableau avec l'utilisateur connecté pour afficher les boutons
+                renderIndoorTable(latestIndoorData);
+
                 const userRef = ref(db, 'presence/' + user.uid);
                 get(userRef).then((snapshot) => {
                     amIPresent = snapshot.exists();
@@ -332,6 +336,9 @@
                 privateContent.style.display = 'none';
                 publicMessage.style.display = 'block';
                 amIPresent = false;
+
+                // NOUVEAU: Mettre à jour le tableau sans utilisateur pour masquer les boutons
+                renderIndoorTable(latestIndoorData);
             }
         });
 
@@ -586,10 +593,10 @@ onValue(ref(db, 'mowing_logs'), (snapshot) => {
             });
         }
 
-        // 6. Écouter les données en temps réel sur Firebase
+        // 6. Écouter les données en temps réel sur Firebase (MODIFIÉ)
         onValue(ref(db, 'indoor_flights/'), (snapshot) => {
-            const data = snapshot.val();
-            renderIndoorTable(data);
+            latestIndoorData = snapshot.val();
+            renderIndoorTable(latestIndoorData);
         });
         
         document.getElementById('btn-login').onclick = () => {
