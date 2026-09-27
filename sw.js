@@ -1,5 +1,5 @@
 // Nom du cache (incrémentez v1, v2, etc. lors de modifications majeures)
-const CACHE_NAME = 'aero-club-indoorV5';
+const CACHE_NAME = 'aero-club-v10'; 
 
 // Liste des fichiers à mettre en cache pour le mode hors-ligne
 const ASSETS_TO_CACHE = [
@@ -21,12 +21,14 @@ const ASSETS_TO_CACHE = [
     './documents/juin 2026.pdf',
     './documents/juillet 2026.pdf',
     './documents/reglement2026.pdf',
-     './documents/air doudou 2026.pdf'
-
+    './documents/air doudou 2026.pdf'
 ];
 
 // 1. Événement d'INSTALLATION : On stocke les fichiers
 self.addEventListener('install', (event) => {
+    // FORCE L'INSTALLATION IMMÉDIATE
+    self.skipWaiting(); 
+
     event.waitUntil(
         caches.open(CACHE_NAME)
             .then((cache) => {
@@ -48,6 +50,9 @@ self.addEventListener('activate', (event) => {
                     }
                 })
             );
+        }).then(() => {
+            // PREND LE CONTRÔLE DES PAGES OUVERTES IMMÉDIATEMENT
+            return self.clients.claim();
         })
     );
 });
