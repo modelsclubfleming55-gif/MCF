@@ -393,6 +393,9 @@ nav {
 
 /* Adaptation en cartes pour les téléphones */
 @media screen and (max-width: 768px) {
+    .indoor-table {
+        min-width: auto; /* Annule les 600px sur mobile */
+    }
     .indoor-table thead { display: none; }
     .indoor-table tr { 
         display: flex; 
