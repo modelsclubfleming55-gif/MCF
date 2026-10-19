@@ -227,11 +227,29 @@
                     </div>
                     
                     <div class="presence-card">
-                        <h3>Événements Privés & Interclubs 2026</h3>
+                        <h3>Événements Privés & Interclubs</h3>
                         <ul class="calendar">
                             <li><span>2 Mars</span> InterClub indoor / Portes ouvertes</li>
                             <li><span>21-22 Août</span> InterClub Privé Outdoor</li>
                         </ul>
+                        <ul class="calendar" id="club-events-list"></ul>
+                    </div>
+
+                    <!-- PANNEAU ADMIN (visible uniquement pour les administrateurs) -->
+                    <div class="presence-card" id="admin-panel" style="display: none; grid-column: 1 / -1; border-left-color: #e74c3c;">
+                        <h3>🛡️ Administration du club</h3>
+                        <p style="margin-bottom: 10px; font-size: 0.9rem; color: #555;">Ajoutez un jour où la salle indoor est indisponible, ou un interclub. Les membres le verront immédiatement.</p>
+                        <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center;">
+                            <input type="date" id="admin-event-date" class="input-style" style="width: auto; margin: 0;">
+                            <select id="admin-event-type" class="input-style" style="width: auto; margin: 0;">
+                                <option value="unavailable">🚫 Jour non disponible (indoor)</option>
+                                <option value="interclub">🏆 Interclub</option>
+                            </select>
+                            <input type="text" id="admin-event-label" class="input-style" style="flex: 1; min-width: 200px; margin: 0;" placeholder="Précision (ex : salle fermée, Interclub à Étain…)">
+                            <button type="button" id="admin-event-add" class="cta-button" style="margin-top: 0;">Ajouter</button>
+                        </div>
+                        <h4 style="margin-top: 20px; color: var(--dark);">Jours enregistrés</h4>
+                        <ul id="admin-events-list" style="list-style: none; margin-top: 10px; font-size: 0.9rem;"></ul>
                     </div>
 
                     <div class="presence-card">
@@ -288,6 +306,8 @@
         let amIPresent = false;
         let isMowing = false;
         let latestIndoorData = null; 
+        let isAdmin = false;
+        let clubEvents = {};
 
         const loginBox = document.getElementById('login-form');
         const loggedBox = document.getElementById('user-logged');
@@ -373,7 +393,14 @@
                 tdInscrits.className = 'td-inscrits';
                 let userIsRegistered = false;
                 
-                if (flightsData && flightsData[dateKey]) {
+                const blocked = Object.values(clubEvents).find(ev => ev.date === dateKey && ev.type === 'unavailable');
+                const interclub = Object.values(clubEvents).find(ev => ev.date === dateKey && ev.type === 'interclub');
+                if (blocked) {
+                    const note = document.createElement('span');
+                    note.style.cssText = 'color:#e74c3c; font-weight:bold;';
+                    note.innerText = '🚫 Salle indisponible' + (blocked.label ? ' : ' + blocked.label : '');
+                    tdInscrits.appendChild(note);
+                } else if (flightsData && flightsData[dateKey]) {
                     Object.entries(flightsData[dateKey]).forEach(([uid, info]) => {
                         const span = document.createElement('span');
                         span.className = 'user-badge ' + (info.hasKey ? 'bg-green' : 'bg-orange');
@@ -387,10 +414,16 @@
                 } else {
                     tdInscrits.innerHTML = "<span style='color: #95a5a6; font-style: italic;'>Aucun inscrit</span>";
                 }
+                if (interclub) {
+                    const ic = document.createElement('div');
+                    ic.style.cssText = 'margin-top:5px; color:#8e44ad; font-weight:bold;';
+                    ic.innerText = '🏆 Interclub' + (interclub.label ? ' : ' + interclub.label : '');
+                    tdInscrits.appendChild(ic);
+                }
                 
                 const tdAction = document.createElement('td');
                 tdAction.className = 'td-action';
-                if (currentUser) {
+                if (currentUser && !blocked) {
                     const btn = document.createElement('button');
                     btn.type = 'button'; // Sécurité supplémentaire pour éviter les rechargements de page
                     
@@ -435,6 +468,13 @@
 
                 renderIndoorTable(latestIndoorData);
 
+                // Vérifie si l'utilisateur est administrateur (admins/<uid> = true)
+                get(ref(db, 'admins/' + user.uid)).then((snap) => {
+                    isAdmin = snap.exists() && snap.val() === true;
+                    document.getElementById('admin-panel').style.display = isAdmin ? 'block' : 'none';
+                    renderClubEvents();
+                }).catch(() => { isAdmin = false; });
+
                 const userRef = ref(db, 'presence/' + user.uid);
                 get(userRef).then((snapshot) => {
                     amIPresent = snapshot.exists();
@@ -446,9 +486,82 @@
                 privateContent.style.display = 'none';
                 publicMessage.style.display = 'block';
                 amIPresent = false;
+                isAdmin = false;
+                document.getElementById('admin-panel').style.display = 'none';
 
                 renderIndoorTable(latestIndoorData);
             }
+        });
+
+        // ==========================================
+        // ÉVÉNEMENTS DU CLUB (admin : indisponibilités & interclubs)
+        // ==========================================
+
+        function renderClubEvents() {
+            const todayKey = formatDateISO(new Date());
+            const sorted = Object.entries(clubEvents).sort((a, b) => a[1].date.localeCompare(b[1].date));
+
+            // Liste visible par tous les membres (événements à venir)
+            const publicList = document.getElementById('club-events-list');
+            publicList.innerHTML = '';
+            sorted.filter(([id, ev]) => ev.date >= todayKey).forEach(([id, ev]) => {
+                const li = document.createElement('li');
+                const [y, m, d] = ev.date.split('-');
+                const icon = ev.type === 'interclub' ? '🏆' : '🚫';
+                const kind = ev.type === 'interclub' ? 'Interclub' : 'Indoor indisponible';
+                li.innerHTML = `<span>${d}/${m}</span> ${icon} ${kind}${ev.label ? ' : ' + ev.label : ''}`;
+                publicList.appendChild(li);
+            });
+
+            // Liste de gestion (admin uniquement)
+            const adminList = document.getElementById('admin-events-list');
+            adminList.innerHTML = '';
+            if (!isAdmin) return;
+            if (sorted.length === 0) {
+                adminList.innerHTML = '<li style="color:#95a5a6;">Aucun jour enregistré.</li>';
+                return;
+            }
+            sorted.forEach(([id, ev]) => {
+                const li = document.createElement('li');
+                li.style.cssText = 'padding:6px 0; border-bottom:1px solid #eee; display:flex; justify-content:space-between; gap:10px; align-items:center;';
+                const [y, m, d] = ev.date.split('-');
+                const icon = ev.type === 'interclub' ? '🏆' : '🚫';
+                const txt = document.createElement('span');
+                txt.innerText = `${icon} ${d}/${m}/${y}${ev.label ? ' — ' + ev.label : ''}`;
+                const del = document.createElement('button');
+                del.type = 'button';
+                del.className = 'btn-small';
+                del.style.cssText = 'background:#e74c3c; margin-top:0;';
+                del.innerText = 'Supprimer';
+                del.addEventListener('click', () => {
+                    if (confirm('Supprimer ce jour ?')) {
+                        remove(ref(db, 'club_events/' + id)).catch(err => alert('Erreur : ' + err.message));
+                    }
+                });
+                li.appendChild(txt);
+                li.appendChild(del);
+                adminList.appendChild(li);
+            });
+        }
+
+        onValue(ref(db, 'club_events'), (snapshot) => {
+            clubEvents = snapshot.val() || {};
+            renderClubEvents();
+            renderIndoorTable(latestIndoorData);
+        });
+
+        document.getElementById('admin-event-add').addEventListener('click', () => {
+            if (!isAdmin) return;
+            const date = document.getElementById('admin-event-date').value;
+            const type = document.getElementById('admin-event-type').value;
+            const label = document.getElementById('admin-event-label').value.trim();
+            if (!date) { alert('Choisissez une date.'); return; }
+            push(ref(db, 'club_events'), { date, type, label, by: currentUser.displayName || currentUser.email, timestamp: Date.now() })
+                .then(() => {
+                    document.getElementById('admin-event-label').value = '';
+                    document.getElementById('admin-event-date').value = '';
+                })
+                .catch(err => alert('Erreur (droits admin ?) : ' + err.message));
         });
 
         // Ecouteur Indoor
