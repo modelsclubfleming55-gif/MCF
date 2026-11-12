@@ -20,6 +20,8 @@ const ASSETS_TO_CACHE = [
     './images/terrainvol.jpg',   
     './documents/juin 2026.pdf',
     './documents/juillet 2026.pdf',
+     './documents/septembre 2026.pdf',
+     './documents/novembre 2026.pdf',
     './documents/reglement2026.pdf',
     './documents/air doudou 2026.pdf'
 ];
