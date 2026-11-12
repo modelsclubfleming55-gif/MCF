@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#3498db">
+    <title>Inscriptions Indoor | Model's Club Fleming</title>
+    <style>
+        :root { --primary:#3498db; --dark:#2c3e50; --light:#f4f6f8; --text:#333; }
+        * { box-sizing:border-box; margin:0; padding:0; }
+        body { font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif; color:var(--text); background:var(--light); line-height:1.4; }
+        header { background:white; box-shadow:0 2px 10px rgba(0,0,0,.1); padding:.6rem 16px; display:flex; align-items:center; gap:14px; position:sticky; top:0; z-index:10; }
+        header img { height:48px; width:auto; }
+        header h1 { font-size:1.1rem; color:var(--dark); }
+        main { max-width:760px; margin:0 auto; padding:20px 16px 50px; }
+        .card { background:white; border-radius:14px; box-shadow:0 4px 10px rgba(0,0,0,.05); border-left:5px solid var(--primary); padding:18px; margin-bottom:16px; }
+        .card h2 { font-size:1.15rem; color:var(--dark); margin-bottom:6px; }
+        .hint { font-size:.85rem; color:#667; margin-top:4px; }
+        input[type=text] { width:100%; padding:12px; margin-top:8px; border:1px solid #ccc; border-radius:8px; font-size:1rem; }
+        .keys { display:block; margin-top:12px; padding:10px; background:#f8f9fa; border-left:4px solid var(--primary); border-radius:6px; font-weight:bold; cursor:pointer; }
+        .keys input { transform:scale(1.2); margin-right:8px; }
+        .day { background:white; border-radius:14px; box-shadow:0 2px 6px rgba(0,0,0,.08); padding:16px; margin-bottom:12px; }
+        .day.blocked { opacity:.85; background:#fdf3f2; }
+        .day h3 { color:var(--primary); font-size:1.1rem; border-bottom:1px dashed #ccc; padding-bottom:8px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:baseline; gap:8px; }
+        .day h3 small { color:#889; font-weight:normal; font-size:.8rem; }
+        .badges { min-height:34px; margin-bottom:10px; }
+        .badge { display:inline-block; padding:5px 11px; margin:2px; border-radius:14px; color:white; font-size:.85rem; font-weight:bold; }
+        .green { background:#27ae60; } .orange { background:#f39c12; }
+        .none { color:#95a5a6; font-style:italic; }
+        .warn { color:#e74c3c; font-weight:bold; }
+        .interclub { color:#8e44ad; font-weight:bold; margin-top:6px; }
+        .btn { width:100%; padding:14px; border:none; border-radius:8px; color:white; font-size:1.05rem; font-weight:bold; cursor:pointer; background:var(--primary); }
+        .btn.out { background:#e74c3c; }
+        .btn:disabled { opacity:.5; cursor:wait; }
+        #status { text-align:center; padding:12px; border-radius:8px; margin-bottom:16px; display:none; }
+        #status.error { display:block; background:#fdecea; color:#b71c1c; }
+        #status.info { display:block; background:#eaf4fd; color:#1a5d96; }
+        footer { text-align:center; font-size:.85rem; color:#778; padding:10px 16px 30px; }
+        footer a { color:var(--primary); }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="images/logo.jpg" alt="Model's Club Fleming" onerror="this.style.display='none'">
+        <h1>Vols Indoor – Salle Vannier</h1>
+    </header>
+
+    <main>
+        <div id="status" class="info">Connexion en cours…</div>
+
+        <div class="card">
+            <h2>👤 Qui êtes-vous ?</h2>
+            <p class="hint">Samedi et dimanche, de 14h à 18h, salle Vannier à Verdun.</p>
+            <input type="text" id="member-name" placeholder="Votre prénom (et initiale du nom)" maxlength="30" autocomplete="given-name">
+            <label class="keys">
+                <input type="checkbox" id="has-keys"> 🔑 Je possède les clés de la salle
+            </label>
+            <p class="hint">Cochez cette case avant de vous inscrire si vous pouvez ouvrir la salle.</p>
+        </div>
+
+        <div id="days"></div>
+    </main>
+
+    <footer>
+        <a href="index.html">← Retour au site du club</a>
+    </footer>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+        import { getDatabase, ref, set, onValue, remove } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-database.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCKX6fHMUwm-PB2Xa0fgXB1bOTLYaWCUj0",
+            authDomain: "modelsclubfleming.firebaseapp.com",
+            databaseURL: "https://modelsclubfleming-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "modelsclubfleming",
+            storageBucket: "modelsclubfleming.firebasestorage.app",
+            messagingSenderId: "172176953870",
+            appId: "1:172176953870:web:6e74763041e61fa2f1a25f"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const auth = getAuth(app);
+
+        const statusEl = document.getElementById('status');
+        const nameInput = document.getElementById('member-name');
+        const keysInput = document.getElementById('has-keys');
+        const daysEl = document.getElementById('days');
+
+        let uid = null;
+        let flights = null;
+        let clubEvents = {};
+        let listening = false;
+
+        // Mémorise le prénom et la case "clés" sur cet appareil
+        try {
+            nameInput.value = localStorage.getItem('indoorName') || '';
+            keysInput.checked = localStorage.getItem('indoorKeys') === '1';
+        } catch (e) {}
+        nameInput.addEventListener('input', () => { try { localStorage.setItem('indoorName', nameInput.value.trim()); } catch (e) {} });
+        keysInput.addEventListener('change', () => { try { localStorage.setItem('indoorKeys', keysInput.checked ? '1' : '0'); } catch (e) {} });
+
+        function showStatus(msg, type) {
+            statusEl.textContent = msg;
+            statusEl.className = type;
+            statusEl.style.display = msg ? 'block' : 'none';
+        }
+
+        function getNextWeekends() {
+            const out = [];
+            const d = new Date();
+            d.setHours(0, 0, 0, 0);
+            for (let i = 0; out.length < 8 && i < 100; i++) {
+                const day = d.getDay();
+                if (day === 6 || day === 0) out.push(new Date(d));
+                d.setDate(d.getDate() + 1);
+            }
+            return out;
+        }
+
+        function iso(date) {
+            const m = String(date.getMonth() + 1).padStart(2, '0');
+            const dd = String(date.getDate()).padStart(2, '0');
+            return `${date.getFullYear()}-${m}-${dd}`;
+        }
+
+        function labelFR(date) {
+            const s = date.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+            return s.charAt(0).toUpperCase() + s.slice(1);
+        }
+
+        async function toggle(dateKey, register, btn) {
+            if (!uid) return;
+            const path = ref(db, `indoor_flights/${dateKey}/${uid}`);
+            if (register) {
+                const name = nameInput.value.trim();
+                if (!name) {
+                    alert('Merci de saisir votre prénom avant de vous inscrire.');
+                    nameInput.focus();
+                    return;
+                }
+                btn.disabled = true;
+                try {
+                    await set(path, { name, hasKey: keysInput.checked, timestamp: Date.now() });
+                } catch (err) {
+                    alert("Inscription impossible : " + err.message);
+                    btn.disabled = false;
+                }
+            } else {
+                btn.disabled = true;
+                try { await remove(path); }
+                catch (err) { alert("Désinscription impossible : " + err.message); btn.disabled = false; }
+            }
+        }
+
+        function render() {
+            daysEl.innerHTML = '';
+            getNextWeekends().forEach(date => {
+                const key = iso(date);
+                const events = Object.values(clubEvents);
+                const blocked = events.find(e => e.date === key && e.type === 'unavailable');
+                const interclub = events.find(e => e.date === key && e.type === 'interclub');
+                const entries = flights && flights[key] ? Object.entries(flights[key]) : [];
+                const mine = entries.some(([id]) => id === uid);
+
+                const card = document.createElement('div');
+                card.className = 'day' + (blocked ? ' blocked' : '');
+
+                const h = document.createElement('h3');
+                h.textContent = labelFR(date);
+                if (!blocked) {
+                    const small = document.createElement('small');
+                    small.textContent = entries.length + ' inscrit' + (entries.length > 1 ? 's' : '');
+                    h.appendChild(small);
+                }
+                card.appendChild(h);
+
+                const badges = document.createElement('div');
+                badges.className = 'badges';
+                if (blocked) {
+                    const w = document.createElement('span');
+                    w.className = 'warn';
+                    w.textContent = '🚫 Salle indisponible' + (blocked.label ? ' : ' + blocked.label : '');
+                    badges.appendChild(w);
+                } else if (entries.length) {
+                    entries.forEach(([id, info]) => {
+                        const b = document.createElement('span');
+                        b.className = 'badge ' + (info.hasKey ? 'green' : 'orange');
+                        b.textContent = info.name + (info.hasKey ? ' 🔑' : '');
+                        badges.appendChild(b);
+                    });
+                } else {
+                    const n = document.createElement('span');
+                    n.className = 'none';
+                    n.textContent = 'Aucun inscrit';
+                    badges.appendChild(n);
+                }
+                if (interclub) {
+                    const ic = document.createElement('div');
+                    ic.className = 'interclub';
+                    ic.textContent = '🏆 Interclub' + (interclub.label ? ' : ' + interclub.label : '');
+                    badges.appendChild(ic);
+                }
+                card.appendChild(badges);
+
+                if (!blocked && uid) {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'btn' + (mine ? ' out' : '');
+                    btn.textContent = mine ? 'Se désinscrire' : "S'inscrire";
+                    btn.addEventListener('click', () => toggle(key, !mine, btn));
+                    card.appendChild(btn);
+                }
+                daysEl.appendChild(card);
+            });
+        }
+
+        function startListening() {
+            if (listening) return;
+            listening = true;
+            onValue(ref(db, 'indoor_flights'), snap => { flights = snap.val(); showStatus('', 'info'); render(); },
+                err => showStatus("Lecture impossible : " + err.message, 'error'));
+            onValue(ref(db, 'club_events'), snap => { clubEvents = snap.val() || {}; render(); },
+                () => { /* événements facultatifs */ });
+        }
+
+        // Connexion anonyme automatique : aucun identifiant à saisir
+        onAuthStateChanged(auth, user => {
+            if (user) { uid = user.uid; startListening(); render(); }
+        });
+        signInAnonymously(auth).catch(err => {
+            const msg = err.code === 'auth/operation-not-allowed'
+                ? "La connexion anonyme n'est pas activée dans Firebase (voir les instructions de l'administrateur)."
+                : "Connexion impossible : " + err.message;
+            showStatus(msg, 'error');
+        });
+
+        render();
+    </script>
+</body>
+</html>
